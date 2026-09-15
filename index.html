@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navidrome Smart Playlist (.nsp) Creator</title>
+    <title>Navidrome Smart Playlist (.nsp) Creator - Full Edition</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -22,7 +22,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         h1 {
@@ -61,7 +61,7 @@
         }
         .rule-row {
             display: grid;
-            grid-template-columns: 2fr 1.5fr 2fr 40px;
+            grid-template-columns: 2.5fr 2fr 2fr 40px;
             gap: 10px;
             align-items: center;
             margin-bottom: 10px;
@@ -104,12 +104,7 @@
             font-family: monospace;
             font-size: 0.85rem;
             color: #38bdf8;
-            max-height: 250px;
-        }
-        .flex-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+            max-height: 300px;
         }
     </style>
 </head>
@@ -117,19 +112,19 @@
 
 <div class="container">
     <h1>Navidrome Smart Playlist (.nsp) Creator</h1>
-    <p class="subtitle">Navidrome用の動的プレイリストファイル（JSON）をブラウザ上で簡単に作成します。</p>
+    <p class="subtitle">Navidromeの全100+フィールド・全演算子に対応した完全版スマートプレイリストビルダー</p>
 
     <!-- 基本情報 -->
     <div class="card">
         <label for="playlistTitle">プレイリスト名</label>
-        <input type="text" id="playlistTitle" placeholder="例: お気に入りの80年代ロック" value="マイお気に入り">
+        <input type="text" id="playlistTitle" placeholder="例: お気に入りの80年代ロック" value="マイスマートプレイリスト">
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <div>
                 <label for="matchLogic">条件の一致ルール (Operator)</label>
                 <select id="matchLogic">
                     <option value="all">すべての条件に一致 (AND)</option>
-                    - <option value="any">いずれかの条件に一致 (OR)</option>
+                    <option value="any">いずれかの条件に一致 (OR)</option>
                 </select>
             </div>
             <div>
@@ -153,14 +148,27 @@
                 <label for="sortField">並び替えフィールド</label>
                 <select id="sortField" onchange="updateJsonPreview()">
                     <option value="random">ランダム (シャッフル)</option>
-                    <option value="title">曲名 (Title)</option>
-                    <option value="artist">アーティスト (Artist)</option>
-                    <option value="album">アルバム (Album)</option>
-                    <option value="year">リリース年 (Year)</option>
-                    <option value="playcount">再生回数 (Play Count)</option>
-                    <option value="lastplayed">最終再生日時 (Last Played)</option>
-                    <option value="dateadded">追加日時 (Date Added)</option>
-                    <option value="rating">評価 (Rating)</option>
+                    <optgroup label="基本">
+                        <option value="title">曲名 (title)</option>
+                        <option value="artist">アーティスト (artist)</option>
+                        <option value="album">アルバム (album)</option>
+                        <option value="albumartist">アルバムアーティスト (albumartist)</option>
+                        <option value="genre">ジャンル (genre)</option>
+                        <option value="year">リリース年 (year)</option>
+                        <option value="duration">再生時間 (duration)</option>
+                        <option value="bpm">BPM (bpm)</option>
+                    </optgroup>
+                    <optgroup label="統計・評価">
+                        <option value="playcount">再生回数 (playcount)</option>
+                        <option value="rating">評価 (rating)</option>
+                        <option value="lastplayed">最終再生日時 (lastplayed)</option>
+                        <option value="dateadded">追加日時 (dateadded)</option>
+                    </optgroup>
+                    <optgroup label="ソート専用">
+                        <option value="titlesort">曲名ソート (titlesort)</option>
+                        <option value="artistsort">アーティストソート (artistsort)</option>
+                        <option value="albumsort">アルバムソート (albumsort)</option>
+                    </optgroup>
                 </select>
             </div>
             <div>
@@ -180,35 +188,131 @@
 </div>
 
 <script>
-    // フィールド一覧の定義 (Navidrome準拠)
-    const fields = [
-        { value: 'title', label: '曲名 (Title)', type: 'string' },
-        { value: 'artist', label: 'アーティスト (Artist)', type: 'string' },
-        { value: 'album', label: 'アルバム (Album)', type: 'string' },
-        { value: 'genre', label: 'ジャンル (Genre)', type: 'string' },
-        { value: 'year', label: 'リリース年 (Year)', type: 'number' },
-        { value: 'rating', label: '評価 (Rating 0-5)', type: 'number' },
-        { value: 'playcount', label: '再生回数 (Play Count)', type: 'number' },
-        { value: 'loved', label: 'お気に入り (Loved: true/false)', type: 'boolean' },
-        { value: 'filetype', label: 'ファイル形式 (mp3, flac等)', type: 'string' },
-        { value: 'bitrate', label: 'ビットレート (Bitrate)', type: 'number' }
+    // 全フィールド定義（カテゴリ別）
+    const fieldCategories = [
+        {
+            group: '基本情報 (Core Track Info)',
+            fields: [
+                { value: 'title', label: '曲名 (title)', type: 'string' },
+                { value: 'album', label: 'アルバム (album)', type: 'string' },
+                { value: 'artist', label: 'アーティスト (artist)', type: 'string' },
+                { value: 'albumartist', label: 'アルバムアーティスト (albumartist)', type: 'string' },
+                { value: 'genre', label: 'ジャンル (genre)', type: 'string' },
+                { value: 'composer', label: '作曲者 (composer)', type: 'string' },
+                { value: 'year', label: 'リリース年 (year)', type: 'number' },
+                { value: 'track', label: 'トラック番号 (track)', type: 'number' },
+                { value: 'discnumber', label: 'ディスク番号 (discnumber)', type: 'number' },
+                { value: 'duration', label: '再生時間秒 (duration)', type: 'number' },
+                { value: 'bpm', label: 'BPM (bpm)', type: 'number' }
+            ]
+        },
+        {
+            group: 'アーティスト・人物 (Artists & People)',
+            fields: [
+                { value: 'albumartists', label: 'アルバムアーティスト(複数) (albumartists)', type: 'string' },
+                { value: 'artists', label: 'アーティスト(複数) (artists)', type: 'string' },
+                { value: 'arranger', label: '編曲者 (arranger)', type: 'string' },
+                { value: 'conductor', label: '指揮者 (conductor)', type: 'string' },
+                { value: 'lyricist', label: '作詞者 (lyricist)', type: 'string' },
+                { value: 'producer', label: 'プロデューサー (producer)', type: 'string' },
+                { value: 'remixer', label: 'リミキサー (remixer)', type: 'string' },
+                { value: 'performer', label: '演奏者 (performer)', type: 'string' }
+            ]
+        },
+        {
+            group: 'アルバム詳細 (Album Details)',
+            fields: [
+                { value: 'albumcomment', label: 'アルバムコメント (albumcomment)', type: 'string' },
+                { value: 'albumtype', label: 'アルバムタイプ (albumtype)', type: 'string' },
+                { value: 'catalognumber', label: 'カタログ番号 (catalognumber)', type: 'string' },
+                { value: 'compilation', label: 'コンピレーション (compilation)', type: 'boolean' },
+                { value: 'recordlabel', label: 'レコード会社 (recordlabel)', type: 'string' },
+                { value: 'releasecountry', label: 'リリース国 (releasecountry)', type: 'string' }
+            ]
+        },
+        {
+            group: 'ファイル・品質 (File & Quality)',
+            fields: [
+                { value: 'filepath', label: 'ファイルパス (filepath)', type: 'string' },
+                { value: 'filetype', label: 'ファイル形式 (filetype: mp3, flac等)', type: 'string' },
+                { value: 'bitrate', label: 'ビットレート (bitrate)', type: 'number' },
+                { value: 'bitdepth', label: 'ビット深度 (bitdepth)', type: 'number' },
+                { value: 'size', label: 'ファイルサイズ (size)', type: 'number' },
+                { value: 'channels', label: 'チャンネル数 (channels)', type: 'number' },
+                { value: 'hascoverart', label: 'アートワーク有無 (hascoverart)', type: 'boolean' },
+                { value: 'explicitstatus', label: 'Explicitステータス (explicitstatus)', type: 'string' }
+            ]
+        },
+        {
+            group: '再生・お気に入り (Listening & Favorites)',
+            fields: [
+                { value: 'playcount', label: '再生回数 (playcount)', type: 'number' },
+                { value: 'rating', label: '評価 0-5 (rating)', type: 'number' },
+                { value: 'loved', label: 'お気に入り (loved)', type: 'boolean' },
+                { value: 'lastplayed', label: '最終再生日時 (lastplayed)', type: 'date' },
+                { value: 'dateloved', label: 'お気に入り登録日時 (dateloved)', type: 'date' }
+            ]
+        },
+        {
+            group: '日付 (Dates)',
+            fields: [
+                { value: 'dateadded', label: 'ライブラリ追加日時 (dateadded)', type: 'date' },
+                { value: 'datemodified', label: 'ファイル更新日時 (datemodified)', type: 'date' },
+                { value: 'originaldate', label: 'オリジナルリリース日 (originaldate)', type: 'date' },
+                { value: 'releasedate', label: 'リリース日 (releasedate)', type: 'date' }
+            ]
+        },
+        {
+            group: 'テキスト・数値タグ (Tags)',
+            fields: [
+                { value: 'comment', label: 'コメント (comment)', type: 'string' },
+                { value: 'lyrics', label: '歌詞 (lyrics)', type: 'string' },
+                { value: 'grouping', label: 'グルーピング (grouping)', type: 'string' },
+                { value: 'mood', label: 'ムード (mood)', type: 'string' },
+                { value: 'key', label: '音楽キー (key)', type: 'string' },
+                { value: 'disctotal', label: '総ディスク数 (disctotal)', type: 'number' },
+                { value: 'tracktotal', label: '総トラック数 (tracktotal)', type: 'number' }
+            ]
+        },
+        {
+            group: 'プレイリスト (Playlist)',
+            fields: [
+                { value: 'id', label: 'プレイリスト判定 (id)', type: 'playlist' }
+            ]
+        }
     ];
 
-    // オペレーターの定義
+    // 全フィールドの平坦化検索用ヘルパー
+    const allFields = fieldCategories.flatMap(cat => cat.fields);
+
+    // 演算子の定義
     const operators = {
         string: [
-            { value: 'contains', label: '〜を含む' },
-            { value: 'is', label: '〜と等しい' },
-            { value: 'startsWith', label: '〜で始まる' },
-            { value: 'endsWith', label: '〜で終わる' }
+            { value: 'contains', label: '〜を含む (contains)' },
+            { value: 'notContains', label: '〜を含まない (notContains)' },
+            { value: 'is', label: '〜と等しい (is)' },
+            { value: 'isNot', label: '〜と等しくない (isNot)' },
+            { value: 'startsWith', label: '〜で始まる (startsWith)' },
+            { value: 'endsWith', label: '〜で終わる (endsWith)' }
         ],
         number: [
-            { value: 'is', label: '〜と等しい' },
+            { value: 'is', label: '〜と等しい (is)' },
+            { value: 'isNot', label: '〜と等しくない (isNot)' },
             { value: 'gt', label: '〜より大きい (>)' },
             { value: 'lt', label: '〜より小さい (<)' }
         ],
         boolean: [
-            { value: 'is', label: '〜である' }
+            { value: 'is', label: '〜である (is)' }
+        ],
+        date: [
+            { value: 'inTheLast', label: '過去◯日以内 (inTheLast)' },
+            { value: 'notInTheLast', label: '過去◯日以外 (notInTheLast)' },
+            { value: 'before', label: '指定日より前 (before)' },
+            { value: 'after', label: '指定日より後 (after)' }
+        ],
+        playlist: [
+            { value: 'inPlaylist', label: '指定プレイリストに含まれる (inPlaylist)' },
+            { value: 'notInPlaylist', label: '指定プレイリストに含まれない (notInPlaylist)' }
         ]
     };
 
@@ -217,27 +321,29 @@
         const row = document.createElement('div');
         row.className = 'rule-row';
 
-        // フィールド選択
+        // フィールド選択（カテゴリごとに関係をグループ化）
         const fieldSelect = document.createElement('select');
-        fields.forEach(f => {
-            const opt = document.createElement('option');
-            opt.value = f.value;
-            opt.textContent = f.label;
-            if (f.value === fieldValue) opt.selected = true;
-            fieldSelect.appendChild(opt);
+        fieldCategories.forEach(cat => {
+            const group = document.createElement('optgroup');
+            group.label = cat.group;
+            cat.fields.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f.value;
+                opt.textContent = f.label;
+                if (f.value === fieldValue) opt.selected = true;
+                group.appendChild(opt);
+            });
+            fieldSelect.appendChild(group);
         });
 
-        // オペレーター選択
         const opSelect = document.createElement('select');
-        
-        // 値入力
         const valInput = document.createElement('input');
         valInput.type = 'text';
         valInput.value = valValue;
-        valInput.placeholder = '値';
+        valInput.placeholder = '値 (数値や真偽値もそのまま入力)';
 
         function updateOperators() {
-            const selectedField = fields.find(f => f.value === fieldSelect.value);
+            const selectedField = allFields.find(f => f.value === fieldSelect.value) || allFields[0];
             const ops = operators[selectedField.type] || operators.string;
             opSelect.innerHTML = '';
             ops.forEach(o => {
@@ -258,7 +364,6 @@
 
         updateOperators();
 
-        // 削除ボタン
         const delBtn = document.createElement('button');
         delBtn.className = 'danger';
         delBtn.textContent = '✕';
@@ -291,7 +396,6 @@
             const input = row.querySelector('input');
             
             let val = input.value;
-            // 数値や真偽値の型変換
             if (val === 'true') val = true;
             else if (val === 'false') val = false;
             else if (!isNaN(val) && val.trim() !== '') val = Number(val);
@@ -339,7 +443,6 @@
         downloadAnchor.remove();
     }
 
-    // 初期起動時にデフォルトで1行追加しておく
     window.onload = () => {
         addRuleRow('genre', 'contains', 'Rock');
         document.getElementById('playlistTitle').oninput = updateJsonPreview;
