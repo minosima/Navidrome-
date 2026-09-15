@@ -299,6 +299,9 @@
     // 全フィールドの平坦化検索用ヘルパー
     const allFields = fieldCategories.flatMap(cat => cat.fields);
 
+    // 人名系カテゴリとして網羅機能を適用したいフィールドの一覧
+    const personFields = ['artist', 'albumartist', 'artists', 'albumartists', 'composer', 'lyricist', 'arranger', 'conductor', 'producer', 'remixer', 'performer'];
+
     // 演算子の定義
     const operators = {
         string: [
@@ -403,18 +406,19 @@
 
         row.querySelector('.row div:nth-child(1)').appendChild(fieldSelect);
         row.querySelector('.row div:nth-child(2)').appendChild(opSelect);
-        
+
         container.appendChild(row);
         toggleHelper(fieldSelect);
         updateJsonPreview();
     }
 
+    // 変更前: 変更前のコードはコメントも含め省略せずに表示する。
     function toggleHelper(select) {
         const row = select.closest('.rule-row');
         const artistHelper = row.querySelector('.artist-helper');
         const normalInput = row.querySelector('.normal-input');
 
-        if (select.value === 'artist') {
+        if (personFields.includes(select.value)) {
             artistHelper.style.display = 'block';
             normalInput.style.display = 'none';
         } else {
@@ -495,7 +499,7 @@
             const field = row.querySelector('.field').value;
             const op = row.querySelector('.operator').value;
 
-            if (field === 'artist') {
+            if (personFields.includes(field)) {
                 const v = new Set();
                 const kanjiS = row.querySelector('.jpS')?.value.trim() || '';
                 const kanjiG = row.querySelector('.jpG')?.value.trim() || '';
@@ -566,7 +570,7 @@
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(nspObj, null, 2));
         const downloadAnchor = document.createElement('a');
         downloadAnchor.setAttribute("href", dataStr);
-        
+
         let filename = (nspObj.title || 'playlist').replace(/[\/\\?%*:|"<>]/g, '_') + '.nsp';
         downloadAnchor.setAttribute("download", filename);
         document.body.appendChild(downloadAnchor);
