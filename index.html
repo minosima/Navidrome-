@@ -60,15 +60,16 @@
             margin-bottom: 15px;
         }
         .rule-row {
-            display: grid;
-            grid-template-columns: 2.5fr 2fr 2fr 40px;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 10px;
             background: rgba(15, 23, 42, 0.5);
-            padding: 10px;
+            padding: 15px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+        .row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
         button {
             background-color: var(--accent-color);
@@ -94,6 +95,19 @@
         }
         button.secondary:hover {
             background-color: #64748b;
+        }
+        .artist-helper {
+            background: #0f172a;
+            padding: 12px;
+            border: 1px dashed var(--accent-color);
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+        }
+        .hint {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 5px;
         }
         pre {
             background-color: #0f172a;
@@ -316,13 +330,14 @@
         ]
     };
 
-    function addRuleRow(fieldValue = 'genre', opValue = 'contains', valValue = 'Rock') {
+    function addRuleRow(fieldValue = 'artist', opValue = 'contains', valValue = '') {
         const container = document.getElementById('rulesContainer');
         const row = document.createElement('div');
         row.className = 'rule-row';
 
-        // フィールド選択（カテゴリごとに関係をグループ化）
+        // フィールド選択
         const fieldSelect = document.createElement('select');
+        fieldSelect.className = 'field';
         fieldCategories.forEach(cat => {
             const group = document.createElement('optgroup');
             group.label = cat.group;
@@ -337,10 +352,7 @@
         });
 
         const opSelect = document.createElement('select');
-        const valInput = document.createElement('input');
-        valInput.type = 'text';
-        valInput.value = valValue;
-        valInput.placeholder = '値 (数値や真偽値もそのまま入力)';
+        opSelect.className = 'operator';
 
         function updateOperators() {
             const selectedField = allFields.find(f => f.value === fieldSelect.value) || allFields[0];
@@ -357,28 +369,116 @@
 
         fieldSelect.onchange = () => {
             updateOperators();
+            toggleHelper(fieldSelect);
             updateJsonPreview();
         };
         opSelect.onchange = updateJsonPreview;
-        valInput.oninput = updateJsonPreview;
 
         updateOperators();
 
-        const delBtn = document.createElement('button');
-        delBtn.className = 'danger';
-        delBtn.textContent = '✕';
-        delBtn.onclick = () => {
-            row.remove();
-            updateJsonPreview();
-        };
+        row.innerHTML = `
+            <div class="row">
+                <div style="flex:2.5;"></div>
+                <div style="flex:2;"></div>
+                <button class="danger" onclick="this.closest('.rule-row').remove(); updateJsonPreview();">✕</button>
+            </div>
+            <div class="artist-helper" style="display:block;">
+                <div class="hint">漢字 (そのまま出力)</div>
+                <div class="row">
+                    <input class="jpS" placeholder="姓（漢字）" style="flex:1;" oninput="updateJsonPreview()">
+                    <input class="jpG" placeholder="名（漢字）" style="flex:1;" oninput="updateJsonPreview()">
+                </div>
+                <div class="hint">ひらがな (カナ・ローマ字を自動生成)</div>
+                <div class="row">
+                    <input class="kanaS" placeholder="せい" style="flex:1;" oninput="updateJsonPreview()">
+                    <input class="kanaG" placeholder="めい" style="flex:1;" oninput="updateJsonPreview()">
+                </div>
+                <div class="hint">直接入力 / 海外アーティスト (1行1項目)</div>
+                <textarea class="rawList" placeholder="例: The Beatles&#10;例: 宇多田ヒカル" style="height:50px; margin-top:5px; width:100%;" oninput="updateJsonPreview()"></textarea>
+            </div>
+            <div class="normal-input" style="display:none; margin-top:8px;">
+                <input type="text" class="ruleValue" value="${valValue}" placeholder="値を入力" style="width:100%;" oninput="updateJsonPreview()">
+            </div>
+        `;
 
-        row.appendChild(fieldSelect);
-        row.appendChild(opSelect);
-        row.appendChild(valInput);
-        row.appendChild(delBtn);
+        row.querySelector('.row div:nth-child(1)').appendChild(fieldSelect);
+        row.querySelector('.row div:nth-child(2)').appendChild(opSelect);
+        
         container.appendChild(row);
-
+        toggleHelper(fieldSelect);
         updateJsonPreview();
+    }
+
+    function toggleHelper(select) {
+        const row = select.closest('.rule-row');
+        const artistHelper = row.querySelector('.artist-helper');
+        const normalInput = row.querySelector('.normal-input');
+
+        if (select.value === 'artist') {
+            artistHelper.style.display = 'block';
+            normalInput.style.display = 'none';
+        } else {
+            artistHelper.style.display = 'none';
+            normalInput.style.display = 'block';
+        }
+    }
+
+    function getFullVariations(text, allowReverse = false) {
+        if (!text) return [];
+        let results = new Set();
+        const jpHalf = text.trim();
+        [jpHalf].forEach(t => {
+            results.add(t);
+            const katakana = t.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
+            results.add(katakana);
+        });
+        const romanMap = {'あ':['a'],'い':['i'],'う':['u'],'え':['e'],'お':['o'],'か':['ka'],'き':['ki'],'く':['ku'],'け':['ke'],'こ':['ko'],'さ':['sa'],'し':['shi','si'],'す':['su'],'せ':['se'],'そ':['so'],'た':['ta'],'ち':['chi','ti'],'つ':['tsu','tu'],'て':['te'],'と':['to'],'な':['na'],'に':['ni'],'ぬ':['nu'],'ね':['ne'],'の':['no'],'は':['ha'],'ひ':['hi'],'ふ':['fu','hu'],'へ':['he'],'ほ':['ho'],'ま':['ma'],'み':['mi'],'む':['mu'],'め':['me'],'も':['mo'],'や':['ya'],'ゆ':['yu'],'よ':['yo'],'ら':['ra'],'り':['ri'],'る':['ru'],'れ':['re'],'ろ':['ro'],'わ':['wa'],'を':['wo','o'],'ん':['n','nn'],'が':['ga'],'ぎ':['gi'],'ぐ':['gu'],'げ':['ge'],'ご':['go'],'ざ':['za'],'じ':['ji','zi'],'ず':['zu'],'ぜ':['ze'],'ぞ':['zo'],'だ':['da'],'ぢ':['ji','di'],'づ':['zu','du'],'で':['de'],'ど':['do'],'ば':['ba'],'び':['bi'],'ぶ':['bu'],'べ':['be'],'ぼ':['bo'],'ぱ':['pa'],'ぴ':['pi'],'ぷ':['pu'],'ぺ':['pe'],'ぽ':['po'],'きゃ':['kya'],'きゅ':['kyu'],'きょ':['kyo'],'しゃ':['sha','sya'],'しゅ':['shu','syu'],'しょ':['sho','syo'],'ちゃ':['cha','tya'],'ちゅ':['chu','tyu'],'ちょ':['cho','tyo'],'にゃ':['nya'],'にゅ':['nyu'],'にょ':['nyo'],'ひゃ':['hya'],'ひゅ':['hyu'],'ひょ':['hyo'],'みゃ':['mya'],'みゅ':['myu'],'みょ':['myo'],'りゃ':['rya'],'りゅ':['ryu'],'りょ':['ryo'],'ぎゃ':['gya'],'ぎゅ':['gyu'],'ぎょ':['gyo'],'じゃ':['ja','zya'],'じゅ':['ju','zyu'],'じょ':['jo','zyo'],'びゃ':['bya'],'びゅ':['byu'],'びょ':['byo'],'ぴゃ':['pya'],'ぴゅ':['pyu'],'ぴょ':['pyo'],'っ':['t','s','k','p']};
+        function toRoman(str) {
+            let s = str;
+            let patterns = [''];
+            let i = 0;
+            while (i < s.length) {
+                let found = false;
+                if (i + 1 < s.length) {
+                    let doubleChar = s.substring(i, i + 2);
+                    if (romanMap[doubleChar]) {
+                        let nextPatterns = [];
+                        patterns.forEach(p => { romanMap[doubleChar].forEach(r => nextPatterns.push(p + r)); });
+                        patterns = nextPatterns;
+                        i += 2; found = true;
+                    }
+                }
+                if (!found) {
+                    let singleChar = s.substring(i, i + 1);
+                    if (romanMap[singleChar]) {
+                        let nextPatterns = [];
+                        patterns.forEach(p => {
+                            if (singleChar === 'っ' && i + 1 < s.length) {
+                                let nextChar = s.substring(i+1, i+2);
+                                let nextRom = romanMap[nextChar] ? romanMap[nextChar][0][0] : '';
+                                nextPatterns.push(p + nextRom);
+                            } else {
+                                romanMap[singleChar].forEach(r => nextPatterns.push(p + r));
+                            }
+                        });
+                        patterns = nextPatterns;
+                    } else {
+                        patterns = patterns.map(p => p + singleChar);
+                    }
+                    i++;
+                }
+            }
+            return patterns;
+        }
+        toRoman(jpHalf).forEach(r => results.add(r));
+        if(allowReverse && jpHalf.includes(' ')) {
+            const parts = jpHalf.split(' ');
+            if(parts.length === 2) {
+                const reversed = parts[1] + ' ' + parts[0];
+                toRoman(reversed).forEach(r => results.add(r));
+            }
+        }
+        return Array.from(results);
     }
 
     function buildNspObject() {
@@ -392,19 +492,50 @@
         const queries = [];
 
         rows.forEach(row => {
-            const selects = row.querySelectorAll('select');
-            const input = row.querySelector('input');
-            
-            let val = input.value;
-            if (val === 'true') val = true;
-            else if (val === 'false') val = false;
-            else if (!isNaN(val) && val.trim() !== '') val = Number(val);
+            const field = row.querySelector('.field').value;
+            const op = row.querySelector('.operator').value;
 
-            queries.push({
-                field: selects[0].value,
-                operator: selects[1].value,
-                value: val
-            });
+            if (field === 'artist') {
+                const v = new Set();
+                const kanjiS = row.querySelector('.jpS')?.value.trim() || '';
+                const kanjiG = row.querySelector('.jpG')?.value.trim() || '';
+                if(kanjiS || kanjiG) {
+                    v.add((kanjiS + kanjiG).trim());
+                    v.add((kanjiS + ' ' + kanjiG).trim());
+                }
+                const kanaS = row.querySelector('.kanaS')?.value.trim() || '';
+                const kanaG = row.querySelector('.kanaG')?.value.trim() || '';
+                if(kanaS || kanaG) {
+                    const basePattern = (kanaS + ' ' + kanaG).trim();
+                    getFullVariations(basePattern, true).forEach(variation => v.add(variation)); 
+                }
+                const rawList = row.querySelector('.rawList')?.value || '';
+                rawList.split('\n').forEach(val => { 
+                    const line = val.trim();
+                    if(line) {
+                        if(/[ぁ-ん]/.test(line)) { getFullVariations(line, false).forEach(variation => v.add(variation)); }
+                        else { v.add(line); }
+                    }
+                });
+
+                v.forEach(val => {
+                    queries.push({ field: field, operator: op, value: val });
+                });
+            } else {
+                const valInput = row.querySelector('.ruleValue');
+                if (valInput) {
+                    let val = valInput.value;
+                    if (val === 'true') val = true;
+                    else if (val === 'false') val = false;
+                    else if (!isNaN(val) && val.trim() !== '') val = Number(val);
+
+                    queries.push({
+                        field: field,
+                        operator: op,
+                        value: val
+                    });
+                }
+            }
         });
 
         const nsp = {
@@ -418,7 +549,7 @@
             nsp.order = sortOrder;
         }
 
-        if (limitStr && !isNaN(limitStr)) {
+        if (limitStr && !isNaN(limitStr) && limitStr.trim() !== '') {
             nsp.limit = Number(limitStr);
         }
 
@@ -444,7 +575,7 @@
     }
 
     window.onload = () => {
-        addRuleRow('genre', 'contains', 'Rock');
+        addRuleRow('artist', 'contains', '');
         document.getElementById('playlistTitle').oninput = updateJsonPreview;
         document.getElementById('matchLogic').onchange = updateJsonPreview;
         document.getElementById('maxTracks').oninput = updateJsonPreview;
