@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navidrome Smart Playlist (.nsp) Creator</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-color: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --danger-color: #f43f5e;
+            --border-color: #334155;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--accent-color);
+        }
+        p.subtitle {
+            color: #94a3b8;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+        .rule-row {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 2fr 40px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        button {
+            background-color: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+        button.danger {
+            background-color: var(--danger-color);
+            color: white;
+            padding: 6px 10px;
+        }
+        button.secondary {
+            background-color: #475569;
+            color: white;
+        }
+        button.secondary:hover {
+            background-color: #64748b;
+        }
+        pre {
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #38bdf8;
+            max-height: 250px;
+        }
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Navidrome Smart Playlist (.nsp) Creator</h1>
+    <p class="subtitle">Navidrome用の動的プレイリストファイル（JSON）をブラウザ上で簡単に作成します。</p>
+
+    <!-- 基本情報 -->
+    <div class="card">
+        <label for="playlistTitle">プレイリスト名</label>
+        <input type="text" id="playlistTitle" placeholder="例: お気に入りの80年代ロック" value="マイお気に入り">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+                <label for="matchLogic">条件の一致ルール (Operator)</label>
+                <select id="matchLogic">
+                    <option value="all">すべての条件に一致 (AND)</option>
+                    - <option value="any">いずれかの条件に一致 (OR)</option>
+                </select>
+            </div>
+            <div>
+                <label for="maxTracks">最大トラック数 (空欄で無制限)</label>
+                <input type="text" id="maxTracks" placeholder="例: 100">
+            </div>
+        </div>
+    </div>
+
+    <!-- 条件ビルダー -->
+    <div class="card">
+        <label>抽出条件ルール</label>
+        <div id="rulesContainer"></div>
+        <button class="secondary" onclick="addRuleRow()">＋ 条件を追加</button>
+    </div>
+
+    <!-- 並び替え・出力 -->
+    <div class="card">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+            <div>
+                <label for="sortField">並び替えフィールド</label>
+                <select id="sortField" onchange="updateJsonPreview()">
+                    <option value="random">ランダム (シャッフル)</option>
+                    <option value="title">曲名 (Title)</option>
+                    <option value="artist">アーティスト (Artist)</option>
+                    <option value="album">アルバム (Album)</option>
+                    <option value="year">リリース年 (Year)</option>
+                    <option value="playcount">再生回数 (Play Count)</option>
+                    <option value="lastplayed">最終再生日時 (Last Played)</option>
+                    <option value="dateadded">追加日時 (Date Added)</option>
+                    <option value="rating">評価 (Rating)</option>
+                </select>
+            </div>
+            <div>
+                <label for="sortOrder">並び順</label>
+                <select id="sortOrder" onchange="updateJsonPreview()">
+                    <option value="asc">昇順 (ASC)</option>
+                    <option value="desc" selected>降順 (DESC)</option>
+                </select>
+            </div>
+        </div>
+
+        <label style="margin-top: 15px;">生成される .nsp (JSON) プレビュー</label>
+        <pre id="jsonPreview"></pre>
+
+        <button onclick="downloadNspFile()" style="margin-top: 10px; width: 100%; padding: 12px; font-size: 1rem;">💾 .nspファイルをダウンロード</button>
+    </div>
+</div>
+
+<script>
+    // フィールド一覧の定義 (Navidrome準拠)
+    const fields = [
+        { value: 'title', label: '曲名 (Title)', type: 'string' },
+        { value: 'artist', label: 'アーティスト (Artist)', type: 'string' },
+        { value: 'album', label: 'アルバム (Album)', type: 'string' },
+        { value: 'genre', label: 'ジャンル (Genre)', type: 'string' },
+        { value: 'year', label: 'リリース年 (Year)', type: 'number' },
+        { value: 'rating', label: '評価 (Rating 0-5)', type: 'number' },
+        { value: 'playcount', label: '再生回数 (Play Count)', type: 'number' },
+        { value: 'loved', label: 'お気に入り (Loved: true/false)', type: 'boolean' },
+        { value: 'filetype', label: 'ファイル形式 (mp3, flac等)', type: 'string' },
+        { value: 'bitrate', label: 'ビットレート (Bitrate)', type: 'number' }
+    ];
+
+    // オペレーターの定義
+    const operators = {
+        string: [
+            { value: 'contains', label: '〜を含む' },
+            { value: 'is', label: '〜と等しい' },
+            { value: 'startsWith', label: '〜で始まる' },
+            { value: 'endsWith', label: '〜で終わる' }
+        ],
+        number: [
+            { value: 'is', label: '〜と等しい' },
+            { value: 'gt', label: '〜より大きい (>)' },
+            { value: 'lt', label: '〜より小さい (<)' }
+        ],
+        boolean: [
+            { value: 'is', label: '〜である' }
+        ]
+    };
+
+    function addRuleRow(fieldValue = 'genre', opValue = 'contains', valValue = 'Rock') {
+        const container = document.getElementById('rulesContainer');
+        const row = document.createElement('div');
+        row.className = 'rule-row';
+
+        // フィールド選択
+        const fieldSelect = document.createElement('select');
+        fields.forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f.value;
+            opt.textContent = f.label;
+            if (f.value === fieldValue) opt.selected = true;
+            fieldSelect.appendChild(opt);
+        });
+
+        // オペレーター選択
+        const opSelect = document.createElement('select');
+        
+        // 値入力
+        const valInput = document.createElement('input');
+        valInput.type = 'text';
+        valInput.value = valValue;
+        valInput.placeholder = '値';
+
+        function updateOperators() {
+            const selectedField = fields.find(f => f.value === fieldSelect.value);
+            const ops = operators[selectedField.type] || operators.string;
+            opSelect.innerHTML = '';
+            ops.forEach(o => {
+                const opt = document.createElement('option');
+                opt.value = o.value;
+                opt.textContent = o.label;
+                if (o.value === opValue) opt.selected = true;
+                opSelect.appendChild(opt);
+            });
+        }
+
+        fieldSelect.onchange = () => {
+            updateOperators();
+            updateJsonPreview();
+        };
+        opSelect.onchange = updateJsonPreview;
+        valInput.oninput = updateJsonPreview;
+
+        updateOperators();
+
+        // 削除ボタン
+        const delBtn = document.createElement('button');
+        delBtn.className = 'danger';
+        delBtn.textContent = '✕';
+        delBtn.onclick = () => {
+            row.remove();
+            updateJsonPreview();
+        };
+
+        row.appendChild(fieldSelect);
+        row.appendChild(opSelect);
+        row.appendChild(valInput);
+        row.appendChild(delBtn);
+        container.appendChild(row);
+
+        updateJsonPreview();
+    }
+
+    function buildNspObject() {
+        const title = document.getElementById('playlistTitle').value || 'スマートプレイリスト';
+        const match = document.getElementById('matchLogic').value;
+        const limitStr = document.getElementById('maxTracks').value;
+        const sortField = document.getElementById('sortField').value;
+        const sortOrder = document.getElementById('sortOrder').value;
+
+        const rows = document.querySelectorAll('.rule-row');
+        const queries = [];
+
+        rows.forEach(row => {
+            const selects = row.querySelectorAll('select');
+            const input = row.querySelector('input');
+            
+            let val = input.value;
+            // 数値や真偽値の型変換
+            if (val === 'true') val = true;
+            else if (val === 'false') val = false;
+            else if (!isNaN(val) && val.trim() !== '') val = Number(val);
+
+            queries.push({
+                field: selects[0].value,
+                operator: selects[1].value,
+                value: val
+            });
+        });
+
+        const nsp = {
+            title: title,
+            all: match === 'all',
+            queries: queries,
+            sort: sortField
+        };
+
+        if (sortField !== 'random') {
+            nsp.order = sortOrder;
+        }
+
+        if (limitStr && !isNaN(limitStr)) {
+            nsp.limit = Number(limitStr);
+        }
+
+        return nsp;
+    }
+
+    function updateJsonPreview() {
+        const nspObj = buildNspObject();
+        document.getElementById('jsonPreview').textContent = JSON.stringify(nspObj, null, 2);
+    }
+
+    function downloadNspFile() {
+        const nspObj = buildNspObject();
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(nspObj, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        
+        let filename = (nspObj.title || 'playlist').replace(/[\/\\?%*:|"<>]/g, '_') + '.nsp';
+        downloadAnchor.setAttribute("download", filename);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    // 初期起動時にデフォルトで1行追加しておく
+    window.onload = () => {
+        addRuleRow('genre', 'contains', 'Rock');
+        document.getElementById('playlistTitle').oninput = updateJsonPreview;
+        document.getElementById('matchLogic').onchange = updateJsonPreview;
+        document.getElementById('maxTracks').oninput = updateJsonPreview;
+    };
+</script>
+
+</body>
+</html>
