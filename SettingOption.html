@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Navidrome 設定項目一覧</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .table-container {
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        tr:hover {
+            background-color: #f1f4f8;
+        }
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 0.85rem;
+        }
+        .dev-header {
+            background-color: #e67e22 !important;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Navidrome 設定項目・環境変数 一覧</h1>
+<p>全173項目（通常設定 144項目 ＋ 開発用フラグ 29項目）の日本語訳・解説付きリファレンス</p>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>設定名</th>
+                <th>環境変数</th>
+                <th>現在値</th>
+                <th>日本語訳・説明</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><code>Address</code></td><td><code>ND_ADDRESS</code></td><td><code>0.0.0.0</code></td><td>リッスンするIPアドレス（空の場合はすべてのインターフェース）</td></tr>
+            <tr><td><code>Agents</code></td><td><code>ND_AGENTS</code></td><td><code>deezer,lastfm,listenbrainz</code></td><td>メタデータ取得やスクロブルに使用する外部エージェント</td></tr>
+            <tr><td><code>AlbumPlayCountMode</code></td><td><code>ND_ALBUMPLAYCOUNTMODE</code></td><td><code>absolute</code></td><td>アルバムの再生回数の計算モード</td></tr>
+            <tr><td><code>ArtistArtPriority</code></td><td><code>ND_ARTISTARTPRIORITY</code></td><td><code>artist.*, album/artist.*, external</code></td><td>アーティスト画像の検索・優先順位</td></tr>
+            <tr><td><code>ArtistImageFolder</code></td><td><code>ND_ARTISTIMAGEFOLDER</code></td><td>-</td><td>アーティスト画像を保存・参照するフォルダ</td></tr>
+            <tr><td><code>AuthRequestLimit</code></td><td><code>ND_AUTHREQUESTLIMIT</code></td><td><code>5</code></td><td>認証リクエストの制限回数</td></tr>
+            <tr><td><code>AuthWindowLength</code></td><td><code>ND_AUTHWINDOWLENGTH</code></td><td><code>20000000000</code></td><td>認証試行を制限する時間ウィンドウの長さ</td></tr>
+            <tr><td><code>AutoImportPlaylists</code></td><td><code>ND_AUTOIMPORTPLAYLISTS</code></td><td><code>TRUE</code></td><td>プレイリストの自動インポートを有効にするか</td></tr>
+            <tr><td><code>AutoTranscodeDownload</code></td><td><code>ND_AUTOTRANSCODEDOWNLOAD</code></td><td><code>FALSE</code></td><td>ダウンロード時に自動トランスコードを行うか</td></tr>
+            <tr><td><code>Backup.Count</code></td><td><code>ND_BACKUP_COUNT</code></td><td><code>0</code></td><td>保持するバックアップの世代数</td></tr>
+            <tr><td><code>Backup.Path</code></td><td><code>ND_BACKUP_PATH</code></td><td>-</td><td>バックアップファイルの保存先パス</td></tr>
+            <tr><td><code>Backup.Schedule</code></td><td><code>ND_BACKUP_SCHEDULE</code></td><td>-</td><td>自動バックアップのスケジュール（Cron形式等）</td></tr>
+            <tr><td><code>BaseHost</code></td><td><code>ND_BASEHOST</code></td><td>-</td><td>ベースホスト名</td></tr>
+            <tr><td><code>BasePath</code></td><td><code>ND_BASEPATH</code></td><td>-</td><td>ベースパス</td></tr>
+            <tr><td><code>BaseScheme</code></td><td><code>ND_BASESCHEME</code></td><td>-</td><td>ベーススキーム（http / https）</td></tr>
+            <tr><td><code>BaseURL</code></td><td><code>ND_BASEURL</code></td><td>-</td><td>リバースプロキシなどで使用するベースURL</td></tr>
+            <tr><td><code>CacheFolder</code></td><td><code>ND_CACHEFOLDER</code></td><td><code>/data/cache</code></td><td>キャッシュデータの保存先ディレクトリ</td></tr>
+            <tr><td><code>CoverArtPriority</code></td><td><code>ND_COVERARTPRIORITY</code></td><td><code>cover.*, folder.*, front.*, embedded, external</code></td><td>カバーアート画像の優先順位</td></tr>
+            <tr><td><code>CoverArtQuality</code></td><td><code>ND_COVERARTQUALITY</code></td><td><code>75</code></td><td>カバーアートの画質（JPEG品質など）</td></tr>
+            <tr><td><code>DataFolder</code></td><td><code>ND_DATAFOLDER</code></td><td><code>/data</code></td><td>データベースなどのデータを保存するディレクトリ</td></tr>
+            <tr><td><code>DbPath</code></td><td><code>ND_DBPATH</code></td><td><code>/data/navidrome.db...</code></td><td>データベースファイルのパスと接続オプション</td></tr>
+            <tr><td><code>Deezer.Enabled</code></td><td><code>ND_DEEZER_ENABLED</code></td><td><code>TRUE</code></td><td>Deezer連携を有効にするか</td></tr>
+            <tr><td><code>Deezer.Language</code></td><td><code>ND_DEEZER_LANGUAGE</code></td><td><code>en</code></td><td>Deezer連携の言語設定</td></tr>
+            <tr><td><code>Deezer.Languages</code></td><td><code>ND_DEEZER_LANGUAGES</code></td><td><code>["en"]</code></td><td>Deezer連携で使用する言語リスト</td></tr>
+            <tr><td><code>DefaultDownloadableShare</code></td><td><code>ND_DEFAULTDOWNLOADABLESHARE</code></td><td><code>FALSE</code></td><td>共有リンクからのダウンロードをデフォルトで許可するか</td></tr>
+            <tr><td><code>DefaultDownsamplingFormat</code></td><td><code>ND_DEFAULTDOWNSAMPLINGFORMAT</code></td><td><code>opus</code></td><td>デフォルトのダウンサンプリング形式</td></tr>
+            <tr><td><code>DefaultLanguage</code></td><td><code>ND_DEFAULTLANGUAGE</code></td><td><code>ja</code></td><td>WebUIのデフォルト言語</td></tr>
+            <tr><td><code>DefaultPlaylistPublicVisibility</code></td><td><code>ND_DEFAULTPLAYLISTPUBLICVISIBILITY</code></td><td><code>FALSE</code></td><td>プレイリストをデフォルトで公開にするか</td></tr>
+            <tr><td><code>DefaultShareExpiration</code></td><td><code>ND_DEFAULTSHAREEXPIRATION</code></td><td><code>3.1536E+16</code></td><td>共有リンクの有効期限のデフォルト</td></tr>
+            <tr><td><code>DefaultTheme</code></td><td><code>ND_DEFAULTTHEME</code></td><td><code>Dark</code></td><td>WebUIのデフォルトテーマ</td></tr>
+            <tr><td><code>DefaultUIVolume</code></td><td><code>ND_DEFAULTUIVOLUME</code></td><td><code>100</code></td><td>WebUIのデフォルト音量</td></tr>
+            <tr><td><code>DiscArtPriority</code></td><td><code>ND_DISCARTPRIORITY</code></td><td><code>disc*.*, cd*.*, cover.*...</code></td><td>ディスクアート画像の優先順位</td></tr>
+            <tr><td><code>EnableArtworkPrecache</code></td><td><code>ND_ENABLEARTWORKPRECACHE</code></td><td><code>TRUE</code></td><td>アートワークの事前キャッシュを有効にするか</td></tr>
+            <tr><td><code>EnableArtworkUpload</code></td><td><code>ND_ENABLEARTWORKUPLOAD</code></td><td><code>TRUE</code></td><td>アートワークのアップロードを許可するか</td></tr>
+            <tr><td><code>EnableCoverAnimation</code></td><td><code>ND_ENABLECOVERANIMATION</code></td><td><code>TRUE</code></td><td>カバー画像のアニメーション効果を有効にするか</td></tr>
+            <tr><td><code>EnableDownloads</code></td><td><code>ND_ENABLEDOWNLOADS</code></td><td><code>TRUE</code></td><td>楽曲のダウンロードを許可するか</td></tr>
+            <tr><td><code>EnableExternalServices</code></td><td><code>ND_ENABLEEXTERNALSERVICES</code></td><td><code>TRUE</code></td><td>外部サービスへのアクセスを許可するか</td></tr>
+            <tr><td><code>EnableFavourites</code></td><td><code>ND_ENABLEFAVOURITES</code></td><td><code>TRUE</code></td><td>お気に入り機能を有効にするか</td></tr>
+            <tr><td><code>EnableGravatar</code></td><td><code>ND_ENABLEGRAVATAR</code></td><td><code>FALSE</code></td><td>Gravatarアバターの利用を有効にするか</td></tr>
+            <tr><td><code>EnableInsightsCollector</code></td><td><code>ND_ENABLEINSIGHTSCOLLECTOR</code></td><td><code>TRUE</code></td><td>インサイト（利用統計など）の収集を有効にするか</td></tr>
+            <tr><td><code>EnableLogRedacting</code></td><td><code>ND_ENABLELOGREDACTING</code></td><td><code>TRUE</code></td><td>ログ内の機密情報をマスクするか</td></tr>
+            <tr><td><code>EnableM3UExternalAlbumArt</code></td><td><code>ND_ENABLEM3UEXTERNALALBUMART</code></td><td><code>FALSE</code></td><td>M3Uプレイリスト内の外部アートワークを有効にするか</td></tr>
+            <tr><td><code>EnableMediaFileCoverArt</code></td><td><code>ND_ENABLEMEDIAFILECOVERART</code></td><td><code>TRUE</code></td><td>メディアファイル内の埋め込みカバーアートを有効にするか</td></tr>
+            <tr><td><code>EnableNaturalSorting</code></td><td><code>ND_ENABLENATURALSORTING</code></td><td><code>FALSE</code></td><td>自然順ソートを有効にするか</td></tr>
+            <tr><td><code>EnableNowPlaying</code></td><td><code>ND_ENABLENOWPLAYING</code></td><td><code>TRUE</code></td><td>再生中情報の共有・表示を有効にするか</td></tr>
+            <tr><td><code>EnableReplayGain</code></td><td><code>ND_ENABLEREPLAYGAIN</code></td><td><code>TRUE</code></td><td>リプレイゲイン（音量正規化）を有効にするか</td></tr>
+            <tr><td><code>EnableScheduledDBAnalyze</code></td><td><code>ND_ENABLESCHEDULEDDBANALYZE</code></td><td><code>TRUE</code></td><td>定期的なデータベースの最適化を有効にするか</td></tr>
+            <tr><td><code>EnableScrobbleHistory</code></td><td><code>ND_ENABLESCROBBLEHISTORY</code></td><td><code>TRUE</code></td><td>スクロブル（再生履歴）の保存を有効にするか</td></tr>
+            <tr><td><code>EnableSharing</code></td><td><code>ND_ENABLESHARING</code></td><td><code>TRUE</code></td><td>楽曲やアルバムの共有リンク生成を有効にするか</td></tr>
+            <tr><td><code>EnableStarRating</code></td><td><code>ND_ENABLESTARRATING</code></td><td><code>TRUE</code></td><td>5段階のスター評価機能を有効にするか</td></tr>
+            <tr><td><code>EnableTranscodingConfig</code></td><td><code>ND_ENABLETRANSCODINGCONFIG</code></td><td><code>FALSE</code></td><td>管理画面からのトランスコード設定変更を許可するか</td></tr>
+            <tr><td><code>EnableUserEditing</code></td><td><code>ND_ENABLEUSEREDITING</code></td><td><code>TRUE</code></td><td>ユーザーが自身のプロファイルを変更できるか</td></tr>
+            <tr><td><code>EnableWebPEncoding</code></td><td><code>ND_ENABLEWEBPENCODING</code></td><td><code>FALSE</code></td><td>WebP形式での画像エンコードを有効にするか</td></tr>
+            <tr><td><code>EnforceNonRootUser</code></td><td><code>ND_ENFORCENONROOTUSER</code></td><td><code>FALSE</code></td><td>非rootユーザーでの実行を強制するか</td></tr>
+            <tr><td><code>ExtAuth.LogoutURL</code></td><td><code>ND_EXTAUTH_LOGOUTURL</code></td><td>-</td><td>外部認証時のログアウトURL</td></tr>
+            <tr><td><code>ExtAuth.TrustedSources</code></td><td><code>ND_EXTAUTH_TRUSTEDSOURCES</code></td><td>-</td><td>外部認証で信頼するソース元</td></tr>
+            <tr><td><code>ExtAuth.UserHeader</code></td><td><code>ND_EXTAUTH_USERHEADER</code></td><td><code>Remote-User</code></td><td>外部認証用ユーザー名のHTTPヘッダー名</td></tr>
+            <tr><td><code>FFmpegPath</code></td><td><code>ND_FFMPEGPATH</code></td><td>-</td><td>FFmpegの実行ファイルパス</td></tr>
+            <tr><td><code>GATrackingID</code></td><td><code>ND_GATRACKINGID</code></td><td>-</td><td>Google AnalyticsのトラッキングID</td></tr>
+            <tr><td><code>HTTPHeaders.FrameOptions</code></td><td><code>ND_HTTPHEADERS_FRAMEOPTIONS</code></td><td><code>DENY</code></td><td>HTTPレスポンスのX-Frame-Options設定</td></tr>
+            <tr><td><code>IgnoredArticles</code></td><td><code>ND_IGNOREDARTICLES</code></td><td><code>The El La Los Las Le Les Os As O A</code></td><td>ソート時に無視する冠詞のリスト</td></tr>
+            <tr><td><code>ImageCacheSize</code></td><td><code>ND_IMAGECACHESIZE</code></td><td><code>100MB</code></td><td>画像キャッシュの最大容量</td></tr>
+            <tr><td><code>IndexGroups</code></td><td><code>ND_INDEXGROUPS</code></td><td><code>A B C...</code></td><td>アーティスト一覧のインデックスのグループ分け</td></tr>
+            <tr><td><code>Inspect.BacklogLimit</code></td><td><code>ND_INSPECT_BACKLOGLIMIT</code></td><td><code>100</code></td><td>インスペクト機能のバックログ制限数</td></tr>
+            <tr><td><code>Inspect.BacklogTimeout</code></td><td><code>ND_INSPECT_BACKLOGTIMEOUT</code></td><td><code>60000000000</code></td><td>インスペクト機能のバックログタイムアウト時間</td></tr>
+            <tr><td><code>Inspect.Enabled</code></td><td><code>ND_INSPECT_ENABLED</code></td><td><code>TRUE</code></td><td>デバッグ・インスペクト機能を有効にするか</td></tr>
+            <tr><td><code>Inspect.MaxRequests</code></td><td><code>ND_INSPECT_MAXREQUESTS</code></td><td><code>1</code></td><td>インスペクト機能の最大リクエスト数</td></tr>
+            <tr><td><code>Jellyfin.Enabled</code></td><td><code>ND_JELLYFIN_ENABLED</code></td><td><code>FALSE</code></td><td>Jellyfin連携を有効にするか</td></tr>
+            <tr><td><code>Jellyfin.ExposedPublicUsers</code></td><td><code>ND_JELLYFIN_EXPOSEDPUBLICUSERS</code></td><td>-</td><td>Jellyfinで公開するパブリックユーザー</td></tr>
+            <tr><td><code>Jellyfin.MaxConcurrentStreams</code></td><td><code>ND_JELLYFIN_MAXCONCURRENTSTREAMS</code></td><td><code>2</code></td><td>Jellyfinの最大同時ストリーム数</td></tr>
+            <tr><td><code>Jellyfin.ServerName</code></td><td><code>ND_JELLYFIN_SERVERNAME</code></td><td>-</td><td>Jellyfinのサーバー名</td></tr>
+            <tr><td><code>Jukebox.AdminOnly</code></td><td><code>ND_JUKEBOX_ADMINONLY</code></td><td><code>TRUE</code></td><td>ジュークボックス機能を管理者のみに制限するか</td></tr>
+            <tr><td><code>Jukebox.Default</code></td><td><code>ND_JUKEBOX_DEFAULT</code></td><td>-</td><td>ジュークボックスのデフォルト設定</td></tr>
+            <tr><td><code>Jukebox.Devices</code></td><td><code>ND_JUKEBOX_DEVICES</code></td><td><code>[]</code></td><td>利用可能なジュークボックス用デバイスのリスト</td></tr>
+            <tr><td><code>Jukebox.Enabled</code></td><td><code>ND_JUKEBOX_ENABLED</code></td><td><code>FALSE</code></td><td>サーバー側での音声再生を有効にするか</td></tr>
+            <tr><td><code>LastFM.ApiKey</code></td><td><code>ND_LASTFM_APIKEY</code></td><td><code>2...1</code></td><td>Last.fm連携用のAPIキー</td></tr>
+            <tr><td><code>LastFM.Enabled</code></td><td><code>ND_LASTFM_ENABLED</code></td><td><code>TRUE</code></td><td>Last.fm連携を有効にするか</td></tr>
+            <tr><td><code>LastFM.Language</code></td><td><code>ND_LASTFM_LANGUAGE</code></td><td><code>en</code></td><td>Last.fmの言語設定</td></tr>
+            <tr><td><code>LastFM.Languages</code></td><td><code>ND_LASTFM_LANGUAGES</code></td><td><code>["en"]</code></td><td>Last.fmで使用する言語リスト</td></tr>
+            <tr><td><code>LastFM.ScrobbleFirstArtistOnly</code></td><td><code>ND_LASTFM_SCROBBLEFIRSTARTISTONLY</code></td><td><code>FALSE</code></td><td>最初の1人のみスクロブルするか</td></tr>
+            <tr><td><code>LastFM.Secret</code></td><td><code>ND_LASTFM_SECRET</code></td><td><code>8...8</code></td><td>Last.fm連携用のシークレットキー</td></tr>
+            <tr><td><code>ListenBrainz.ArtistAlgorithm</code></td><td><code>ND_LISTENBRAINZ_ARTISTALGORITHM</code></td><td><code>session_based...</code></td><td>ListenBrainzのアーティスト推奨アルゴリズム設定</td></tr>
+            <tr><td><code>ListenBrainz.BaseURL</code></td><td><code>ND_LISTENBRAINZ_BASEURL</code></td><td><code>https://api.listenbrainz.org/1/</code></td><td>ListenBrainzのAPIベースURL</td></tr>
+            <tr><td><code>ListenBrainz.Enabled</code></td><td><code>ND_LISTENBRAINZ_ENABLED</code></td><td><code>TRUE</code></td><td>ListenBrainz連携を有効にするか</td></tr>
+            <tr><td><code>ListenBrainz.TrackAlgorithm</code></td><td><code>ND_LISTENBRAINZ_TRACKALGORITHM</code></td><td><code>session_based...</code></td><td>ListenBrainzのトラック推奨アルゴリズム設定</td></tr>
+            <tr><td><code>LogFile</code></td><td><code>ND_LOGFILE</code></td><td>-</td><td>ログファイルを出力する場合のファイルパス</td></tr>
+            <tr><td><code>LogLevel</code></td><td><code>ND_LOGLEVEL</code></td><td><code>info</code></td><td>ログの出力詳細レベル</td></tr>
+            <tr><td><code>LyricsPriority</code></td><td><code>ND_LYRICSPRIORITY</code></td><td><code>.ttml,.yaml...</code></td><td>読み込む歌詞ファイルの拡張子・優先順位</td></tr>
+            <tr><td><code>Matcher.FuzzyThreshold</code></td><td><code>ND_MATCHER_FUZZYTHRESHOLD</code></td><td><code>85</code></td><td>メタデータあいまい一致の閾値</td></tr>
+            <tr><td><code>Matcher.PreferStarred</code></td><td><code>ND_MATCHER_PREFERSTARRED</code></td><td><code>TRUE</code></td><td>スター付きの項目を優先してマッチさせるか</td></tr>
+            <tr><td><code>MaxImageSize</code></td><td><code>ND_MAXIMAGESIZE</code></td><td><code>20MB</code></td><td>処理する画像の最大サイズ制限</td></tr>
+            <tr><td><code>MaxImageUploadSize</code></td><td><code>ND_MAXIMAGEUPLOADSIZE</code></td><td><code>10MB</code></td><td>アップロード可能な画像の最大サイズ制限</td></tr>
+            <tr><td><code>MaxSidebarPlaylists</code></td><td><code>ND_MAXSIDEBARPLAYLISTS</code></td><td><code>100</code></td><td>サイドバーに表示するプレイリストの最大数</td></tr>
+            <tr><td><code>MPVCmdTemplate</code></td><td><code>ND_MPVCMDTEMPLATE</code></td><td><code>mpv --audio-device...</code></td><td>MPVのコマンドテンプレート</td></tr>
+            <tr><td><code>MPVPath</code></td><td><code>ND_MPVPATH</code></td><td>-</td><td>MPVの実行ファイルパス</td></tr>
+            <tr><td><code>MusicFolder</code></td><td><code>ND_MUSICFOLDER</code></td><td><code>/music</code></td><td>音楽ライブラリのルートディレクトリパス</td></tr>
+            <tr><td><code>PasswordEncryptionKey</code></td><td><code>ND_PASSWORDENCRYPTIONKEY</code></td><td>-</td><td>パスワード暗号化用の秘密鍵</td></tr>
+            <tr><td><code>PID.Album</code></td><td><code>ND_PID_ALBUM</code></td><td><code>musicbrainz_albumid...</code></td><td>アルバム識別子の生成ルール</td></tr>
+            <tr><td><code>PID.Track</code></td><td><code>ND_PID_TRACK</code></td><td><code>musicbrainz_trackid...</code></td><td>トラック識別子の生成ルール</td></tr>
+            <tr><td><code>PlaylistsPath</code></td><td><code>ND_PLAYLISTSPATH</code></td><td>-</td><td>プレイリストファイルを読み書きするディレクトリ</td></tr>
+            <tr><td><code>Plugins.AutoReload</code></td><td><code>ND_PLUGINS_AUTORELOAD</code></td><td><code>FALSE</code></td><td>プラグインの自動リロードを有効にするか</td></tr>
+            <tr><td><code>Plugins.CacheSize</code></td><td><code>ND_PLUGINS_CACHESIZE</code></td><td><code>200MB</code></td><td>プラグインキャッシュの最大容量</td></tr>
+            <tr><td><code>Plugins.Enabled</code></td><td><code>ND_PLUGINS_ENABLED</code></td><td><code>TRUE</code></td><td>プラグイン機能を有効にするか</td></tr>
+            <tr><td><code>Plugins.Folder</code></td><td><code>ND_PLUGINS_FOLDER</code></td><td><code>/data/plugins</code></td><td>プラグインを格納するディレクトリパス</td></tr>
+            <tr><td><code>Plugins.LogLevel</code></td><td><code>ND_PLUGINS_LOGLEVEL</code></td><td>-</td><td>プラグイン専用のログ出力レベル</td></tr>
+            <tr><td><code>Port</code></td><td><code>ND_PORT</code></td><td><code>4533</code></td><td>サーバーがリッスンするポート番号</td></tr>
+            <tr><td><code>PreferSortTags</code></td><td><code>ND_PREFERSORTTAGS</code></td><td><code>FALSE</code></td><td>ソート用タグを優先して使用するか</td></tr>
+            <tr><td><code>Prometheus.Enabled</code></td><td><code>ND_PROMETHEUS_ENABLED</code></td><td><code>FALSE</code></td><td>Prometheusメトリクスエンドポイントを有効にするか</td></tr>
+            <tr><td><code>Prometheus.MetricsPath</code></td><td><code>ND_PROMETHEUS_METRICSPATH</code></td><td><code>/******s</code></td><td>Prometheusメトリクスの公開パス</td></tr>
+            <tr><td><code>Prometheus.Password</code></td><td><code>ND_PROMETHEUS_PASSWORD</code></td><td>-</td><td>Prometheusアクセス用のパスワード</td></tr>
+            <tr><td><code>RecentlyAddedByModTime</code></td><td><code>ND_RECENTLYADDEDBYMODTIME</code></td><td><code>FALSE</code></td><td>「最近追加した曲」の判定にファイルの更新日時を使用するか</td></tr>
+            <tr><td><code>Scanner.ArtistJoiner</code></td><td><code>ND_SCANNER_ARTISTJOINER</code></td><td><code>•</code></td><td>複数アーティストを結合する際の区切り文字</td></tr>
+            <tr><td><code>Scanner.ArtistSplitExceptions</code></td><td><code>ND_SCANNER_ARTISTSPLITEXCEPTIONS</code></td><td><code>[]</code></td><td>アーティスト名分割の除外リスト</td></tr>
+            <tr><td><code>Scanner.Enabled</code></td><td><code>ND_SCANNER_ENABLED</code></td><td><code>TRUE</code></td><td>メディアスキャナー機能を有効にするか</td></tr>
+            <tr><td><code>Scanner.Extractor</code></td><td><code>ND_SCANNER_EXTRACTOR</code></td><td><code>taglib</code></td><td>メタデータ抽出エンジンの種類</td></tr>
+            <tr><td><code>Scanner.FollowSymlinks</code></td><td><code>ND_SCANNER_FOLLOWSYMLINKS</code></td><td><code>TRUE</code></td><td>スキャン時にシンボリックリンクを追跡するか</td></tr>
+            <tr><td><code>Scanner.GenreSeparators</code></td><td><code>ND_SCANNER_GENRESEPARATORS</code></td><td>-</td><td>ジャンルタグの区切り文字</td></tr>
+            <tr><td><code>Scanner.GroupAlbumReleases</code></td><td><code>ND_SCANNER_GROUPALBUMRELEASES</code></td><td><code>FALSE</code></td><td>同名アルバムのリリースをグループ化するか</td></tr>
+            <tr><td><code>Scanner.IgnoreDotFolders</code></td><td><code>ND_SCANNER_IGNOREDOTFOLDERS</code></td><td><code>TRUE</code></td><td>隠しフォルダをスキャンから除外するか</td></tr>
+            <tr><td><code>Scanner.PurgeMissing</code></td><td><code>ND_SCANNER_PURGEMISSING</code></td><td><code>never</code></td><td>存在しなくなったファイルをデータベースから削除する条件</td></tr>
+            <tr><td><code>Scanner.ScanOnStartup</code></td><td><code>ND_SCANNER_SCANONSTARTUP</code></td><td><code>TRUE</code></td><td>起動時に音楽フォルダを自動スキャンするか</td></tr>
+            <tr><td><code>Scanner.Schedule</code></td><td><code>ND_SCANNER_SCHEDULE</code></td><td>-</td><td>定期スキャンのスケジュール設定</td></tr>
+            <tr><td><code>Scanner.WatcherWait</code></td><td><code>ND_SCANNER_WATCHERWAIT</code></td><td><code>5000000000</code></td><td>ファイル変更監視の待機時間</td></tr>
+            <tr><td><code>Search.Backend</code></td><td><code>ND_SEARCH_BACKEND</code></td><td><code>fts</code></td><td>検索バックエンドの種類</td></tr>
+            <tr><td><code>Search.FullString</code></td><td><code>ND_SEARCH_FULLSTRING</code></td><td><code>FALSE</code></td><td>完全な文字列一致検索を行うか</td></tr>
+            <tr><td><code>SessionTimeout</code></td><td><code>ND_SESSIONTIMEOUT</code></td><td><code>8.64E+13</code></td><td>ログインセッションの有効期限</td></tr>
+            <tr><td><code>ShareURL</code></td><td><code>ND_SHAREURL</code></td><td>-</td><td>共有リンク生成時のベースURL</td></tr>
+            <tr><td><code>SmartPlaylistRefreshDelay</code></td><td><code>ND_SMARTPLAYLISTREFRESHDELAY</code></td><td><code>5000000000</code></td><td>スマートプレイリストの更新遅延時間</td></tr>
+            <tr><td><code>Subsonic.AppendAlbumVersion</code></td><td><code>ND_SUBSONIC_APPENDALBUMVERSION</code></td><td><code>TRUE</code></td><td>アルバム名にバージョン情報を付加するか</td></tr>
+            <tr><td><code>Subsonic.AppendSubtitle</code></td><td><code>ND_SUBSONIC_APPENDSUBTITLE</code></td><td><code>TRUE</code></td><td>サブタイトル情報を付加するか</td></tr>
+            <tr><td><code>Subsonic.ArtistParticipations</code></td><td><code>ND_SUBSONIC_ARTISTPARTICIPATIONS</code></td><td><code>FALSE</code></td><td>アーティストの参加情報を有効にするか</td></tr>
+            <tr><td><code>Subsonic.DefaultReportRealPath</code></td><td><code>ND_SUBSONIC_DEFAULTREPORTREALPATH</code></td><td><code>FALSE</code></td><td>レポート時に実際のファイルパスを使用するか</td></tr>
+            <tr><td><code>Subsonic.EnableAverageRating</code></td><td><code>ND_SUBSONIC_ENABLEAVERAGERATING</code></td><td><code>TRUE</code></td><td>平均評価の計算・表示を有効にするか</td></tr>
+            <tr><td><code>Subsonic.LegacyClients</code></td><td><code>ND_SUBSONIC_LEGACYCLIENTS</code></td><td><code>DSub</code></td><td>レガシーなSubsonicクライアントの互換性設定</td></tr>
+            <tr><td><code>Subsonic.MinimalClients</code></td><td><code>ND_SUBSONIC_MINIMALCLIENTS</code></td><td><code>SubMusic</code></td><td>最小限のクライアント互換性設定</td></tr>
+            <tr><td><code>TLSCert</code></td><td><code>ND_TLSCERT</code></td><td>-</td><td>HTTPS用のTLS証明書ファイルパス</td></tr>
+            <tr><td><code>TLSKey</code></td><td><code>ND_TLSKEY</code></td><td>-</td><td>HTTPS用のTLS秘密鍵ファイルパス</td></tr>
+            <tr><td><code>TranscodingCacheSize</code></td><td><code>ND_TRANSCODINGCACHESIZE</code></td><td><code>100MB</code></td><td>トランスコードキャッシュの最大容量</td></tr>
+            <tr><td><code>UICoverArtSize</code></td><td><code>ND_UICOVERARTSIZE</code></td><td><code>300</code></td><td>UI上で表示するカバーアートのサイズ</td></tr>
+            <tr><td><code>UILoginBackgroundURL</code></td><td><code>ND_UILOGINBACKGROUNDURL</code></td><td><code>/backgrounds</code></td><td>ログイン画面の背景画像URL</td></tr>
+            <tr><td><code>UIPlaybackReportInterval</code></td><td><code>ND_UIPLAYBACKREPORTINTERVAL</code></td><td><code>60000000000</code></td><td>再生進捗レポートの送信間隔</td></tr>
+            <tr><td><code>UISearchDebounceMs</code></td><td><code>ND_UISEARCHDEBOUNCEMS</code></td><td><code>200</code></td><td>検索入力のデバウンス時間（ミリ秒）</td></tr>
+            <tr><td><code>UIWelcomeMessage</code></td><td><code>ND_UIWELCOMEMESSAGE</code></td><td>-</td><td>WebUIのウェルカムメッセージ</td></tr>
+            <tr><td><code>UnixSocketPerm</code></td><td><code>ND_UNIXSOCKETPERM</code></td><td><code>0660</code></td><td>UNIXドメインソケットのパーミッション</td></tr>
+            
+            <!-- 開発用フラグセクション -->
+            <tr><td colspan="4" class="dev-header">🚧 開発用フラグ（変更または削除される可能性があります）</td></tr>
+            
+            <tr><td><code>DevActivityPanel</code></td><td><code>ND_DEVACTIVITYPANEL</code></td><td><code>TRUE</code></td><td>アクティビティパネルを表示するか</td></tr>
+            <tr><td><code>DevActivityPanelUpdateRate</code></td><td><code>ND_DEVACTIVITYPANELUPDATERATE</code></td><td><code>300000000</code></td><td>アクティビティパネルの更新間隔</td></tr>
+            <tr><td><code>DevAlbumInfoTimeToLive</code></td><td><code>ND_DEVALBUMINFOTIMETOLIVE</code></td><td><code>6.048E+14</code></td><td>アルバム情報のキャッシュ生存時間（TTL）</td></tr>
+            <tr><td><code>DevArtistInfoTimeToLive</code></td><td><code>ND_DEVARTISTINFOTIMETOLIVE</code></td><td><code>8.64E+13</code></td><td>アーティスト情報のキャッシュ生存時間（TTL）</td></tr>
+            <tr><td><code>DevArtworkExternalMaxRPS</code></td><td><code>ND_DEVARTWORKEXTERNALMAXRPS</code></td><td><code>2</code></td><td>外部アートワーク取得の最大リクエスト数/秒</td></tr>
+            <tr><td><code>DevArtworkMaxRequests</code></td><td><code>ND_DEVARTWORKMAXREQUESTS</code></td><td><code>2</code></td><td>アートワーク取得の最大同時リクエスト数</td></tr>
+            <tr><td><code>DevArtworkThrottleBacklogLimit</code></td><td><code>ND_DEVARTWORKTHROTTLEBACKLOGLIMIT</code></td><td><code>100</code></td><td>アートワークスロットルのバックログ制限数</td></tr>
+            <tr><td><code>DevArtworkThrottleBacklogTimeout</code></td><td><code>ND_DEVARTWORKTHROTTLEBACKLOGTIMEOUT</code></td><td><code>60000000000</code></td><td>アートワークスロットルのバックログタイムアウト</td></tr>
+            <tr><td><code>DevArtworkThrottleBuffered</code></td><td><code>ND_DEVARTWORKTHROTTLEBUFFERED</code></td><td><code>TRUE</code></td><td>アートワークスロットルでバッファリングを行うか</td></tr>
+            <tr><td><code>DevArtworkWorkerConcurrency</code></td><td><code>ND_DEVARTWORKWORKERCONCURRENCY</code></td><td><code>2</code></td><td>アートワーク処理ワーカーの並行数</td></tr>
+            <tr><td><code>DevAutoCreateAdminPassword</code></td><td><code>ND_DEVAUTOCREATEADMINPASSWORD</code></td><td>-</td><td>開発用：管理者パスワードの自動生成</td></tr>
+            <tr><td><code>DevAutoLoginUsername</code></td><td><code>ND_DEVAUTOLOGINUSERNAME</code></td><td>-</td><td>開発用：自動ログインするユーザー名</td></tr>
+            <tr><td><code>DevEnableMediaFileProbe</code></td><td><code>ND_DEVENABLEMEDIAFILEPROBE</code></td><td><code>TRUE</code></td><td>メディアファイルのプローブを有効にするか</td></tr>
+            <tr><td><code>DevEnablePlayerInsights</code></td><td><code>ND_DEVENABLEPLAYERINSIGHTS</code></td><td><code>TRUE</code></td><td>プレーヤーインサイトを有効にするか</td></tr>
+            <tr><td><code>DevEnablePluginsInsights</code></td><td><code>ND_DEVENABLEPLUGINSINSIGHTS</code></td><td><code>TRUE</code></td><td>プラグインインサイトを有効にするか</td></tr>
+            <tr><td><code>DevEnableProfiler</code></td><td><code>ND_DEVENABLEPROFILER</code></td><td><code>FALSE</code></td><td>Goプロファイラを有効にするか</td></tr>
+            <tr><td><code>DevExternalArtistFetchMultiplier</code></td><td><code>ND_DEVEXTERNALARTISTFETCHMULTIPLIER</code></td><td><code>1.5</code></td><td>外部アーティスト取得の乗数</td></tr>
+            <tr><td><code>DevExternalScanner</code></td><td><code>ND_DEVEXTERNALSCANNER</code></td><td><code>TRUE</code></td><td>外部スキャナー機能を使用するか</td></tr>
+            <tr><td><code>DevInsightsInitialDelay</code></td><td><code>ND_DEVINSIGHTSINITIALDELAY</code></td><td><code>1.8E+12</code></td><td>インサイト収集の初期遅延時間</td></tr>
+            <tr><td><code>DevLogSourceLine</code></td><td><code>ND_DEVLOGSOURCELINE</code></td><td><code>FALSE</code></td><td>ログにソースコードの行番号を出力するか</td></tr>
+            <tr><td><code>DevNewEventStream</code></td><td><code>ND_DEVNEWEVENTSTREAM</code></td><td><code>TRUE</code></td><td>新しいイベントストリーム機構を使用するか</td></tr>
+            <tr><td><code>DevOffsetOptimize</code></td><td><code>ND_DEVOFFSETOPTIMIZE</code></td><td><code>50000</code></td><td>オフセット最適化のしきい値</td></tr>
+            <tr><td><code>DevPluginCompilationTimeout</code></td><td><code>ND_DEVPLUGINCOMPILATIONTIMEOUT</code></td><td><code>60000000000</code></td><td>プラグインコンパイルのタイムアウト時間</td></tr>
+            <tr><td><code>DevPreserveUnicodeInExternalCalls</code></td><td><code>ND_DEVPRESERVEUNICODEINEXTERNALCALLS</code></td><td><code>FALSE</code></td><td>外部呼び出し時にUnicode文字を保持するか</td></tr>
+            <tr><td><code>DevScannerThreads</code></td><td><code>ND_DEVSCANNERTHREADS</code></td><td><code>5</code></td><td>スキャナーの実行スレッド数</td></tr>
+            <tr><td><code>DevSelectiveWatcher</code></td><td><code>ND_DEVSELECTIVEWATCHER</code></td><td><code>TRUE</code></td><td>選択的ファイル監視を有効にするか</td></tr>
+            <tr><td><code>DevShowArtistPage</code></td><td><code>ND_DEVSHOWARTISTPAGE</code></td><td><code>TRUE</code></td><td>アーティストページを表示するか</td></tr>
+            <tr><td><code>DevSidebarPlaylists</code></td><td><code>ND_DEVSIDEBARPLAYLISTS</code></td><td><code>TRUE</code></td><td>サイドバーにプレイリストを表示するか</td></tr>
+            <tr><td><code>DevUIShowConfig</code></td><td><code>ND_DEVUISHOWCONFIG</code></td><td><code>TRUE</code></td><td>UI上に設定情報を表示するか</td></tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
