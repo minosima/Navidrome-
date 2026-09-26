@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navidrome Smart Playlist (.nsp) Creator - Full Fields Edition</title>
+    <title>Navidrome Smart Playlist (.nsp) Creator - Complete Edition</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -49,7 +49,7 @@
             font-weight: 600;
             font-size: 0.9rem;
         }
-        input[type="text"], select {
+        input[type="text"], select, textarea {
             width: 100%;
             padding: 8px 12px;
             background-color: #0f172a;
@@ -136,12 +136,15 @@
 
 <div class="container">
     <h1>Navidrome Smart Playlist (.nsp) Creator</h1>
-    <p class="subtitle">Navidromeの仕様（all/any内部ネスト）に完全準拠したスマートプレイリストビルダー</p>
+    <p class="subtitle">Navidromeの仕様（all/any/none・全フィールド）に完全準拠したスマートプレイリストビルダー</p>
 
     <!-- 基本情報 -->
     <div class="card">
         <label for="playlistTitle">プレイリスト名</label>
         <input type="text" id="playlistTitle" placeholder="例: お気に入りの80年代ロック" value="マイスマートプレイリスト">
+
+        <label for="playlistComment">プレイリスト説明 (comment)</label>
+        <textarea id="playlistComment" placeholder="プレイリストの概要やメモを入力" style="height: 60px; resize: vertical;" oninput="updateJsonPreview()"></textarea>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <div>
@@ -149,6 +152,7 @@
                 <select id="matchLogic" onchange="updateJsonPreview()">
                     <option value="all">すべての条件に一致 (all)</option>
                     <option value="any" selected>いずれかの条件に一致 (any)</option>
+                    <option value="none">いずれの条件にも一致しない (none)</option>
                 </select>
             </div>
             <div>
@@ -407,6 +411,7 @@
                     <select class="subMatchLogic" style="width: auto; margin-bottom: 0; padding: 4px 8px;" onchange="updateJsonPreview()">
                         <option value="all">すべて一致 (all)</option>
                         <option value="any" selected>いずれか一致 (any)</option>
+                        <option value="none">いずれも一致しない (none)</option>
                     </select>
                 </div>
                 <button class="danger" onclick="this.closest('.group-box').remove(); updateJsonPreview();">✕ グループ削除</button>
@@ -551,6 +556,7 @@
 
     function buildNspObject() {
         const title = document.getElementById('playlistTitle').value || 'マイスマートプレイリスト';
+        const comment = document.getElementById('playlistComment').value.trim();
         const matchLogic = document.getElementById('matchLogic').value;
         const limitStr = document.getElementById('maxTracks').value;
         const sortField = document.getElementById('sortField').value;
@@ -560,10 +566,15 @@
         const ruleConditions = parseContainer(rulesContainer);
 
         const nsp = {
-            title: title,
-            [matchLogic]: ruleConditions,
-            sort: sortField
+            title: title
         };
+
+        if (comment) {
+            nsp.comment = comment;
+        }
+
+        nsp[matchLogic] = ruleConditions;
+        nsp.sort = sortField;
 
         if (sortField !== 'random') {
             nsp.order = sortOrder;
