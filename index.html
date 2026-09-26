@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navidrome Smart Playlist (.nsp) Creator - Nested Edition</title>
+    <title>Navidrome Smart Playlist (.nsp) Creator - Operator Edition</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -246,21 +246,34 @@
             { value: 'is', label: '〜と等しい (is)' },
             { value: 'isNot', label: '〜と等しくない (isNot)' },
             { value: 'startsWith', label: '〜で始まる (startsWith)' },
-            { value: 'endsWith', label: '〜で終わる (endsWith)' }
+            { value: 'endsWith', label: '〜で終わる (endsWith)' },
+            { value: 'inPlaylist', label: 'プレイリストに含まれる (inPlaylist)' },
+            { value: 'notInPlaylist', label: 'プレイリストに含まれない (notInPlaylist)' },
+            { value: 'isMissing', label: '値が存在しない (isMissing)' },
+            { value: 'isPresent', label: '値が存在する (isPresent)' }
         ],
         number: [
             { value: 'is', label: '〜と等しい (is)' },
             { value: 'isNot', label: '〜と等しくない (isNot)' },
             { value: 'gt', label: '〜より大きい (>)' },
-            { value: 'lt', label: '〜より小さい (<)' }
+            { value: 'lt', label: '〜より小さい (<)' },
+            { value: 'inTheRange', label: '範囲内 (inTheRange)' },
+            { value: 'isMissing', label: '値が存在しない (isMissing)' },
+            { value: 'isPresent', label: '値が存在する (isPresent)' }
         ],
         boolean: [
-            { value: 'is', label: '〜である (is)' }
+            { value: 'is', label: '〜である (is)' },
+            { value: 'isMissing', label: '値が存在しない (isMissing)' },
+            { value: 'isPresent', label: '値が存在する (isPresent)' }
         ],
         date: [
             { value: 'inTheLast', label: '過去◯日以内 (inTheLast)' },
+            { value: 'notInTheLast', label: '過去◯日以外 (notInTheLast)' },
             { value: 'before', label: '指定日より前 (before)' },
-            { value: 'after', label: '指定日より後 (after)' }
+            { value: 'after', label: '指定日より後 (after)' },
+            { value: 'inTheRange', label: '期間内 (inTheRange)' },
+            { value: 'isMissing', label: '値が存在しない (isMissing)' },
+            { value: 'isPresent', label: '値が存在する (isPresent)' }
         ]
     };
 
@@ -297,14 +310,34 @@
                 if (o.value === opValue) opt.selected = true;
                 opSelect.appendChild(opt);
             });
+            toggleInputVisibility();
+        }
+
+        function toggleInputVisibility() {
+            const op = opSelect.value;
+            const artistHelper = row.querySelector('.artist-helper');
+            const normalInput = row.querySelector('.normal-input');
+
+            if (op === 'isMissing' || op === 'isPresent') {
+                artistHelper.style.display = 'none';
+                normalInput.style.display = 'none';
+            } else if (personFields.includes(fieldSelect.value)) {
+                artistHelper.style.display = 'block';
+                normalInput.style.display = 'none';
+            } else {
+                artistHelper.style.display = 'none';
+                normalInput.style.display = 'block';
+            }
         }
 
         fieldSelect.onchange = () => {
             updateOperators();
-            toggleHelper(fieldSelect);
             updateJsonPreview();
         };
-        opSelect.onchange = updateJsonPreview;
+        opSelect.onchange = () => {
+            toggleInputVisibility();
+            updateJsonPreview();
+        };
 
         updateOperators();
 
@@ -329,7 +362,7 @@
                 <textarea class="rawList" placeholder="例: The Beatles&#10;例: 宇多田ヒカル" style="height:50px; margin-top:5px; width:100%;" oninput="updateJsonPreview()"></textarea>
             </div>
             <div class="normal-input" style="display:none; margin-top:8px;">
-                <input type="text" class="ruleValue" value="${valValue}" placeholder="値を入力" style="width:100%;" oninput="updateJsonPreview()">
+                <input type="text" class="ruleValue" value="${valValue}" placeholder="値を入力（範囲指定はカンマ区切り例: 1980,1989）" style="width:100%;" oninput="updateJsonPreview()">
             </div>
         `;
 
@@ -337,7 +370,7 @@
         row.querySelector('.row div:nth-child(2)').appendChild(opSelect);
 
         container.appendChild(row);
-        toggleHelper(fieldSelect);
+        updateOperators();
         updateJsonPreview();
     }
 
@@ -363,24 +396,9 @@
         `;
         container.appendChild(groupBox);
         
-        // デフォルトで最初の条件をサブグループ内に追加
         const subContainer = groupBox.querySelector('.sub-rules-container');
         addRuleRowToContainer(subContainer, 'artist', 'contains', '');
         updateJsonPreview();
-    }
-
-    function toggleHelper(select) {
-        const row = select.closest('.rule-row');
-        const artistHelper = row.querySelector('.artist-helper');
-        const normalInput = row.querySelector('.normal-input');
-
-        if (personFields.includes(select.value)) {
-            artistHelper.style.display = 'block';
-            normalInput.style.display = 'none';
-        } else {
-            artistHelper.style.display = 'none';
-            normalInput.style.display = 'block';
-        }
     }
 
     function getFullVariations(text, allowReverse = false) {
@@ -392,7 +410,7 @@
             const katakana = t.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
             results.add(katakana);
         });
-        const romanMap = {'あ':['a'],'い':['i'],'う':['u'],'え':['e'],'お':['o'],'か':['ka'],'き':['ki'],'く':['ku'],'け':['ke'],'こ':['ko'],'さ':['sa'],'し':['shi','si'],'す':['su'],'せ':['se'],'そ':['so'],'た':['ta'],'ち':['chi','ti'],'つ':['tsu','tu'],'て':['te'],'と':['to'],'な':['na'],'に':['ni'],'ぬ':['nu'],'ね':['ne'],'の':['no'],'は':['ha'],'ひ':['hi'],'ふ':['fu','hu'],'へ':['he'],'ほ':['ho'],'ま':['ma'],'み':['mi'],'む':['mu'],'め':['me'],'も':['mo'],'や':['ya'],'ゆ':['yu'],'よ':['yo'],'ら':['ra'],'り':['ri'],'る':['ru'],'れ':['re'],'ろ':['ro'],'わ':['wa'],'を':['wo','o'],'ん':['n','nn'],'が':['ga'],'ぎ':['gi'],'ぐ':['gu'],'げ':['ge'],'ご':['go'],'ざ':['za'],'じ':['ji','zi'],'ず':['zu'],'ぜ':['ze'],'ぞ':['zo'],'だ':['da'],'ぢ':['ji','di'],'づ':['zu','du'],'で':['de'],'ど':['do'],'ば':['ba'],'び':['bi'],'ぶ':['bu'],'べ':['be'],'ぼ':['bo'],'ぱ':['pa'],'ぴ':['pi'],'ぷ':['pu'],'ぺ':['pe'],'ぽ':['po'],'きゃ':['kya'],'きゅ':['kyu'],'きょ':['kyo'],'しゃ':['sha','sya'],'しゅ':['shu','syu'],'しょ':['sho','syo'],'ちゃ':['cha','tya'],'ちゅ':['chu','tyu'],'ちょ':['cho','tyo'],'にゃ':['nya'],'にゅ':['nyu'],'にょ':['nyo'],'ひゃ':['hya'],'ひゅ':['hyu'],'ひょ':['hyo'],'みゃ':['mya'],'みゅ':['myu'],'みょ':['myo'],'りゃ':['rya'],'りゅ':['ryu'],'りょ':['ryo'],'ぎゃ':['gya'],'ぎゅ':['gyu'],'ぎょ':['gyo'],'じゃ':['ja','zya'],'じゅ':['ju','zyu'],'じょ':['jo','zyo'],'びゃ':['bya'],'びゅ':['byu'],'びょ':['byo'],'ぴゃ':['pya'],'ぴゅ':['pyu'],'ぴょ':['pyo'],'っ':['t','s','k','p']};
+        const romanMap = {'あ':['a'],'い':['i'],'う':['u'],'え':['e'],'お':['o'],'か':['ka'],'き':['ki'],'く':['ku'],'け':['ke'],'こ':['ko'],'さ':['sa'],'し':['shi','si'],'す':['su'],'せ':['se'],'そ':['so'],'た':['ta'],'ち':['chi','ti'],'つ':['tsu','tu'],'て':['te'],'と':['to'],'な':['na'],'に':['ni'],'ぬ':['nu'],'ね':['ne'],'の':['no'],'は':['ha'],'ひ':['hi'],'ふ':['fu','hu'],'へ':['he'],'ほ':['ho'],'ま':['ma'],'み':['mi'],'む':['mu'],'め':['me'],'も':['mo'],'や':['ya'],'ゆ':['yu'],'よ':['yo'],'ら':['ra'],'り':['ri'],'る':['ru'],'れ':['re'],'ろ':['ro'],'わ':['wa'],'를':['wo','o'],'ん':['n','nn'],'が':['ga'],'ぎ':['gi'],'ぐ':['gu'],'げ':['ge'],'ご':['go'],'ざ':['za'],'じ':['ji','zi'],'ず':['zu'],'ぜ':['ze'],'ぞ':['zo'],'だ':['da'],'ぢ':['ji','di'],'づ':['zu','du'],'で':['de'],'ど':['do'],'ば':['ba'],'び':['bi'],'ぶ':['bu'],'べ':['be'],'ぼ':['bo'],'ぱ':['pa'],'ぴ':['pi'],'ぷ':['pu'],'ぺ':['pe'],'ぽ':['po'],'きゃ':['kya'],'きゅ':['kyu'],'きょ':['kyo'],'しゃ':['sha','sya'],'しゅ':['shu','syu'],'しょ':['sho','syo'],'ちゃ':['cha','tya'],'ちゅ':['chu','tyu'],'ちょ':['cho','tyo'],'にゃ':['nya'],'にゅ':['nyu'],'にょ':['nyo'],'ひゃ':['hya'],'ひゅ':['hyu'],'ひょ':['hyo'],'みゃ':['mya'],'みゅ':['myu'],'みょ':['myo'],'りゃ':['rya'],'りゅ':['ryu'],'りょ':['ryo'],'ぎゃ':['gya'],'ぎゅ':['gyu'],'ぎょ':['gyo'],'じゃ':['ja','zya'],'じゅ':['ju','zyu'],'じょ':['jo','zyo'],'びゃ':['bya'],'びゅ':['byu'],'びょ':['byo'],'ぴゃ':['pya'],'ぴゅ':['pyu'],'ぴょ':['pyo'],'っ':['t','s','k','p']};
         function toRoman(str) {
             let s = str;
             let patterns = [''];
@@ -441,7 +459,6 @@
         return Array.from(results);
     }
 
-    // 再帰的にコンテナ要素から条件やサブグループを組み立てる
     function parseContainer(container) {
         const conditions = [];
         const children = container.children;
@@ -451,7 +468,9 @@
                 const field = child.querySelector('.field').value;
                 const op = child.querySelector('.operator').value;
 
-                if (personFields.includes(field)) {
+                if (op === 'isMissing' || op === 'isPresent') {
+                    conditions.push({ [op]: field });
+                } else if (personFields.includes(field)) {
                     const v = new Set();
                     const kanjiS = child.querySelector('.jpS')?.value.trim() || '';
                     const kanjiG = child.querySelector('.jpG')?.value.trim() || '';
@@ -481,9 +500,16 @@
                     const valInput = child.querySelector('.ruleValue');
                     if (valInput) {
                         let val = valInput.value;
-                        if (val === 'true') val = true;
-                        else if (val === 'false') val = false;
-                        else if (!isNaN(val) && val.trim() !== '') val = Number(val);
+                        if (op === 'inTheRange' && val.includes(',')) {
+                            val = val.split(',').map(item => {
+                                let trimmed = item.trim();
+                                return !isNaN(trimmed) && trimmed !== '' ? Number(trimmed) : trimmed;
+                            });
+                        } else {
+                            if (val === 'true') val = true;
+                            else if (val === 'false') val = false;
+                            else if (!isNaN(val) && val.trim() !== '') val = Number(val);
+                        }
 
                         conditions.push({ [op]: { [field]: val } });
                     }
