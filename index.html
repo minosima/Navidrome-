@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navidrome Smart Playlist (.nsp) Creator - Operator Edition</title>
+    <title>Navidrome Smart Playlist (.nsp) Creator - Full Fields Edition</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -220,18 +220,43 @@
                 { value: 'albumartist', label: 'アルバムアーティスト (albumartist)', type: 'string' },
                 { value: 'genre', label: 'ジャンル (genre)', type: 'string' },
                 { value: 'composer', label: '作曲者 (composer)', type: 'string' },
+                { value: 'lyricist', label: '作詞者 (lyricist)', type: 'string' },
+                { value: 'arranger', label: '編曲者 (arranger)', type: 'string' },
+                { value: 'conductor', label: '指揮者 (conductor)', type: 'string' },
+                { value: 'producer', label: 'プロデューサー (producer)', type: 'string' },
+                { value: 'remixer', label: 'リミキサー (remixer)', type: 'string' },
+                { value: 'performer', label: '演奏者 (performer)', type: 'string' },
+                { value: 'comment', label: 'コメント (comment)', type: 'string' },
                 { value: 'year', label: 'リリース年 (year)', type: 'number' },
+                { value: 'originalyear', label: 'オリジナルリリース年 (originalyear)', type: 'number' },
+                { value: 'track', label: 'トラック番号 (track)', type: 'number' },
+                { value: 'disc', label: 'ディスク番号 (disc)', type: 'number' },
                 { value: 'duration', label: '再生時間秒 (duration)', type: 'number' },
-                { value: 'bpm', label: 'BPM (bpm)', type: 'number' }
+                { value: 'bpm', label: 'BPM (bpm)', type: 'number' },
+                { value: 'compilation', label: 'コンピレーション (compilation)', type: 'boolean' }
             ]
         },
         {
             group: '再生・お気に入り (Listening & Favorites)',
             fields: [
                 { value: 'playcount', label: '再生回数 (playcount)', type: 'number' },
+                { value: 'skipcount', label: 'スキップ回数 (skipcount)', type: 'number' },
                 { value: 'rating', label: '評価 0-5 (rating)', type: 'number' },
                 { value: 'loved', label: 'お気に入り (loved)', type: 'boolean' },
-                { value: 'lastplayed', label: '最終再生日時 (lastplayed)', type: 'date' }
+                { value: 'lastplayed', label: '最終再生日時 (lastplayed)', type: 'date' },
+                { value: 'lastskipped', label: '最終スキップ日時 (lastskipped)', type: 'date' },
+                { value: 'dateadded', label: 'ライブラリ追加日時 (dateadded)', type: 'date' }
+            ]
+        },
+        {
+            group: 'ファイル・技術仕様 (File & Tech Specs)',
+            fields: [
+                { value: 'path', label: 'ファイルパス (path)', type: 'string' },
+                { value: 'format', label: '音声フォーマット (format)', type: 'string' },
+                { value: 'bitrate', label: 'ビットレート (bitrate)', type: 'number' },
+                { value: 'channels', label: 'チャンネル数 (channels)', type: 'number' },
+                { value: 'samplerate', label: 'サンプリングレート (samplerate)', type: 'number' },
+                { value: 'size', label: 'ファイルサイズ (size)', type: 'number' }
             ]
         }
     ];
