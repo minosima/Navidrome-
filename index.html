@@ -281,6 +281,31 @@
         const row = document.createElement('div');
         row.className = 'rule-row';
 
+        row.innerHTML = `
+            <div class="row">
+                <div style="flex:2.5;"></div>
+                <div style="flex:2;"></div>
+                <button class="danger" onclick="this.closest('.rule-row').remove(); updateJsonPreview();">✕</button>
+            </div>
+            <div class="artist-helper" style="display:none;">
+                <div class="hint">漢字 (そのまま出力)</div>
+                <div class="row">
+                    <input class="jpS" placeholder="姓（漢字）" style="flex:1;" oninput="updateJsonPreview()">
+                    <input class="jpG" placeholder="名（漢字）" style="flex:1;" oninput="updateJsonPreview()">
+                </div>
+                <div class="hint">ひらがな (カナ・ローマ字を自動生成)</div>
+                <div class="row">
+                    <input class="kanaS" placeholder="せい" style="flex:1;" oninput="updateJsonPreview()">
+                    <input class="kanaG" placeholder="めい" style="flex:1;" oninput="updateJsonPreview()">
+                </div>
+                <div class="hint">直接入力 / 海外アーティスト (1行1項目)</div>
+                <textarea class="rawList" placeholder="例: The Beatles&#10;例: 宇多田ヒカル" style="height:50px; margin-top:5px; width:100%;" oninput="updateJsonPreview()"></textarea>
+            </div>
+            <div class="normal-input" style="display:none; margin-top:8px;">
+                <input type="text" class="ruleValue" value="${valValue}" placeholder="値を入力（範囲指定はカンマ区切り例: 1980,1989）" style="width:100%;" oninput="updateJsonPreview()">
+            </div>
+        `;
+
         const fieldSelect = document.createElement('select');
         fieldSelect.className = 'field';
         fieldCategories.forEach(cat => {
@@ -338,33 +363,6 @@
             toggleInputVisibility();
             updateJsonPreview();
         };
-
-        updateOperators();
-
-        row.innerHTML = `
-            <div class="row">
-                <div style="flex:2.5;"></div>
-                <div style="flex:2;"></div>
-                <button class="danger" onclick="this.closest('.rule-row').remove(); updateJsonPreview();">✕</button>
-            </div>
-            <div class="artist-helper" style="display:block;">
-                <div class="hint">漢字 (そのまま出力)</div>
-                <div class="row">
-                    <input class="jpS" placeholder="姓（漢字）" style="flex:1;" oninput="updateJsonPreview()">
-                    <input class="jpG" placeholder="名（漢字）" style="flex:1;" oninput="updateJsonPreview()">
-                </div>
-                <div class="hint">ひらがな (カナ・ローマ字を自動生成)</div>
-                <div class="row">
-                    <input class="kanaS" placeholder="せい" style="flex:1;" oninput="updateJsonPreview()">
-                    <input class="kanaG" placeholder="めい" style="flex:1;" oninput="updateJsonPreview()">
-                </div>
-                <div class="hint">直接入力 / 海外アーティスト (1行1項目)</div>
-                <textarea class="rawList" placeholder="例: The Beatles&#10;例: 宇多田ヒカル" style="height:50px; margin-top:5px; width:100%;" oninput="updateJsonPreview()"></textarea>
-            </div>
-            <div class="normal-input" style="display:none; margin-top:8px;">
-                <input type="text" class="ruleValue" value="${valValue}" placeholder="値を入力（範囲指定はカンマ区切り例: 1980,1989）" style="width:100%;" oninput="updateJsonPreview()">
-            </div>
-        `;
 
         row.querySelector('.row div:nth-child(1)').appendChild(fieldSelect);
         row.querySelector('.row div:nth-child(2)').appendChild(opSelect);
