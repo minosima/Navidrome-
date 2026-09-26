@@ -5,26 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navidrome Smart Playlist (.nsp) Creator - Complete Edition</title>
     <style>
-        :root {
+        /* カラーテーマ定義 (3色配色の考え方を応用) */
+        [data-theme="dark-modern"] {
             --bg-color: #0f172a;
             --card-bg: #1e293b;
             --text-color: #f8fafc;
+            --label-color: #cbd5e1;
             --accent-color: #38bdf8;
             --accent-hover: #0ea5e9;
             --danger-color: #f43f5e;
             --border-color: #334155;
             --group-bg: rgba(30, 41, 59, 0.7);
+            --input-bg: #0b0f19;
+            --hint-color: #94a3b8;
         }
+        [data-theme="light-natural"] {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --label-color: #334155;
+            --accent-color: #0d9488;
+            --accent-hover: #0f766e;
+            --danger-color: #e11d48;
+            --border-color: #cbd5e1;
+            --group-bg: #f1f5f9;
+            --input-bg: #f8fafc;
+            --hint-color: #64748b;
+        }
+        [data-theme="warm-feminine"] {
+            --bg-color: #fdf2f8;
+            --card-bg: #ffffff;
+            --text-color: #4a154b;
+            --label-color: #581c87;
+            --accent-color: #db2777;
+            --accent-hover: #be185d;
+            --danger-color: #dc2626;
+            --border-color: #fbcfe8;
+            --group-bg: #fae8ff;
+            --input-bg: #fff1f2;
+            --hint-color: #9333ea;
+        }
+        [data-theme="cool-tech"] {
+            --bg-color: #09090b;
+            --card-bg: #18181b;
+            --text-color: #fafafa;
+            --label-color: #e4e4e7;
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --danger-color: #ef4444;
+            --border-color: #27272a;
+            --group-bg: rgba(24, 24, 27, 0.8);
+            --input-bg: #09090b;
+            --hint-color: #a1a1aa;
+        }
+
         body {
             font-family: system-ui, -apple-system, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
             padding: 20px;
+            transition: background 0.3s, color 0.3s;
         }
         .container {
             max-width: 1000px;
             margin: 0 auto;
+        }
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
         }
         h1 {
             font-size: 1.5rem;
@@ -32,9 +83,31 @@
             color: var(--accent-color);
         }
         p.subtitle {
-            color: #94a3b8;
+            color: var(--hint-color);
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 0;
+        }
+        .theme-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            white-space: nowrap; /* テキストが勝手に折り返されないようにする */
+        }
+        .theme-selector label {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            color: var(--label-color);
+            white-space: nowrap;
+        }
+        .theme-selector select {
+            margin-bottom: 0;
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            width: auto;
         }
         .card {
             background-color: var(--card-bg);
@@ -42,17 +115,19 @@
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
+            transition: background 0.3s, border 0.3s;
         }
         label {
             display: block;
             margin-bottom: 6px;
             font-weight: 600;
             font-size: 0.9rem;
+            color: var(--label-color);
         }
         input[type="text"], select, textarea {
             width: 100%;
             padding: 8px 12px;
-            background-color: #0f172a;
+            background-color: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 6px;
             color: var(--text-color);
@@ -61,7 +136,7 @@
             margin-bottom: 15px;
         }
         .rule-row {
-            background: rgba(15, 23, 42, 0.5);
+            background: var(--input-bg);
             padding: 15px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
@@ -81,7 +156,7 @@
         }
         button {
             background-color: var(--accent-color);
-            color: #0f172a;
+            color: #ffffff;
             border: none;
             padding: 8px 16px;
             border-radius: 6px;
@@ -98,16 +173,16 @@
             padding: 6px 10px;
         }
         button.secondary {
-            background-color: #475569;
-            color: white;
+            background-color: var(--border-color);
+            color: var(--text-color);
             font-size: 0.85rem;
             padding: 6px 12px;
         }
         button.secondary:hover {
-            background-color: #64748b;
+            opacity: 0.8;
         }
         .artist-helper {
-            background: #0f172a;
+            background: var(--bg-color);
             padding: 12px;
             border: 1px dashed var(--accent-color);
             border-radius: 6px;
@@ -116,27 +191,40 @@
         }
         .hint {
             font-size: 12px;
-            color: #94a3b8;
+            color: var(--hint-color);
             margin-bottom: 5px;
         }
         pre {
-            background-color: #0f172a;
+            background-color: var(--input-bg);
             border: 1px solid var(--border-color);
             padding: 15px;
             border-radius: 6px;
             overflow-x: auto;
             font-family: monospace;
             font-size: 0.85rem;
-            color: #38bdf8;
+            color: var(--accent-color);
             max-height: 300px;
         }
     </style>
 </head>
-<body>
+<body data-theme="dark-modern">
 
 <div class="container">
-    <h1>Navidrome Smart Playlist (.nsp) Creator</h1>
-    <p class="subtitle">Navidromeの仕様（all/any/none・全フィールド）に完全準拠したスマートプレイリストビルダー</p>
+    <div class="header-bar">
+        <div>
+            <h1>Navidrome Smart Playlist (.nsp) Creator</h1>
+            <p class="subtitle">Navidromeの仕様に完全準拠したスマートプレイリストビルダー</p>
+        </div>
+        <div class="theme-selector">
+            <label for="themeSelect">🎨 テーマ</label>
+            <select id="themeSelect" onchange="changeTheme(this.value)">
+                <option value="dark-modern">ダークモダン (標準)</option>
+                <option value="light-natural">ナチュラルライト</option>
+                <option value="warm-feminine">ウォームフェミニン</option>
+                <option value="cool-tech">クールテック</option>
+            </select>
+        </div>
+    </div>
 
     <!-- 基本情報 -->
     <div class="card">
@@ -305,6 +393,11 @@
             { value: 'isPresent', label: '値が存在する (isPresent)' }
         ]
     };
+
+    function changeTheme(themeName) {
+        document.body.setAttribute('data-theme', themeName);
+        localStorage.setItem('nsp_theme', themeName);
+    }
 
     function addRuleRowToContainer(container, fieldValue = 'artist', opValue = 'contains', valValue = '') {
         const row = document.createElement('div');
@@ -606,6 +699,11 @@
     }
 
     window.onload = () => {
+        // 保存されたテーマがあれば復元
+        const savedTheme = localStorage.getItem('nsp_theme') || 'dark-modern';
+        document.body.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeSelect').value = savedTheme;
+
         addRuleRowToContainer(document.getElementById('rulesContainer'), 'artist', 'contains', '');
         document.getElementById('playlistTitle').oninput = updateJsonPreview;
         document.getElementById('maxTracks').oninput = updateJsonPreview;
