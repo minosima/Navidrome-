@@ -510,10 +510,7 @@
                 <button class="danger" onclick="this.closest('.group-box').remove(); updateJsonPreview();">✕ グループ削除</button>
             </div>
             <div class="sub-rules-container" style="margin-left: 10px; border-left: 2px solid var(--border-color); padding-left: 15px;"></div>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button class="secondary" onclick="addRuleRowToContainer(this.previousElementSibling.previousElementSibling, 'artist', 'contains', '')">＋ 条件を追加</button>
-                <button class="secondary" onclick="addGroupBoxToContainer(this.previousElementSibling.previousElementSibling.previousElementSibling)">📂 サブグループを追加</button>
-            </div>
+
         `;
         container.appendChild(groupBox);
         
